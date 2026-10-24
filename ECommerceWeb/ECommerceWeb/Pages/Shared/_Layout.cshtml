@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#174f43" />
+    <title>@ViewData["Title"] · Mobi</title>
+    <link rel="icon" href="~/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Đến nội dung chính</a>
+    <div class="announcement">
+        <div class="page-shell announcement-inner">
+            <span>Một chiếc điện thoại. Nhiều điều mới.</span>
+            <a asp-page="/Index" asp-fragment="dien-thoai">Khám phá bộ sưu tập <span aria-hidden="true">↗</span></a>
+        </div>
+    </div>
+    <header class="site-header">
+        <nav class="page-shell header-inner" aria-label="Điều hướng chính">
+            <a class="brand" asp-page="/Index" aria-label="Mobi — Trang chủ">mobi<span>.</span></a>
+            <div class="nav-links">
+                <a asp-page="/Index" asp-fragment="dien-thoai">Điện thoại</a>
+                <a href="#ve-mobi">Về Mobi</a>
+            </div>
+            <a class="cart-link" asp-page="/Cart">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7Z" /><path d="M8 8V6a4 4 0 0 1 8 0v2" /></svg>
+                Giỏ hàng
+            </a>
+        </nav>
+    </header>
+    <main id="main-content">
+        @RenderBody()
+    </main>
+    <footer class="site-footer" id="ve-mobi">
+        <div class="page-shell footer-inner">
+            <div>
+                <a class="brand" asp-page="/Index">mobi<span>.</span></a>
+                <p>Công nghệ bạn thích. Lựa chọn bạn cần.</p>
+            </div>
+            <div class="footer-links">
+                <a asp-page="/Index" asp-fragment="dien-thoai">Khám phá điện thoại</a>
+                <a asp-page="/Cart">Giỏ hàng của bạn</a>
+                <span>© @DateTime.Now.Year Mobi</span>
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

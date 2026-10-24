@@ -1,0 +1,43 @@
+@page "/admin/login"
+@model ECommerceWeb.Pages.Admin.LoginModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#174f43" />
+    <title>Đăng nhập quản trị · Mobi</title>
+    <link rel="icon" href="~/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin-auth-body">
+    <main class="admin-login-shell">
+        <div class="admin-login-card">
+            <a class="brand" asp-page="/Index" aria-label="Mobi — Trang chủ">mobi<span>.</span></a>
+            <p class="eyebrow">KHÔNG GIAN QUẢN TRỊ</p>
+            <h1>Chào mừng trở lại.</h1>
+            <p class="admin-login-description">Đăng nhập để theo dõi danh mục điện thoại của cửa hàng.</p>
+
+            <form method="post">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div asp-validation-summary="All" class="admin-auth-error" role="alert"></div>
+                <div class="admin-form-field">
+                    <label asp-for="Username">Tên đăng nhập</label>
+                    <input asp-for="Username" autocomplete="username" required maxlength="100" placeholder="Nhập tên đăng nhập" autofocus />
+                </div>
+                <div class="admin-form-field">
+                    <label asp-for="Password">Mật khẩu</label>
+                    <input asp-for="Password" autocomplete="current-password" required maxlength="256" placeholder="Nhập mật khẩu" />
+                </div>
+                <button class="button button-primary" type="submit">Đăng nhập <span aria-hidden="true">→</span></button>
+            </form>
+            <a class="admin-login-back" asp-page="/Index"><span aria-hidden="true">←</span> Quay lại cửa hàng</a>
+        </div>
+        <p class="admin-login-footnote">Mobi Admin · Dành cho người quản trị cửa hàng</p>
+    </main>
+</body>
+</html>

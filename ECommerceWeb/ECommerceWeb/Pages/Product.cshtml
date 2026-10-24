@@ -1,0 +1,51 @@
+@page "{id:int}"
+@model ECommerceWeb.Pages.ProductModel
+
+@{
+    ViewData["Title"] = Model.Product.Name;
+    var product = Model.Product;
+}
+
+<div class="page-shell">
+    <nav class="breadcrumb-nav" aria-label="Đường dẫn">
+        <a asp-page="/Index">Trang chủ</a>
+        <span aria-hidden="true">/</span>
+        <a asp-page="/Index" asp-fragment="dien-thoai">Điện thoại</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">@product.Name</span>
+    </nav>
+
+    <section class="product-detail" aria-labelledby="product-name">
+        <div class="detail-gallery">
+            <img class="detail-image" src="@product.ImageUrl" alt="@product.Name màu @product.Color" width="720" height="720" />
+        </div>
+
+        <div class="detail-content">
+            <p class="eyebrow">@product.Brand · @product.Storage</p>
+            <h1 id="product-name">@product.Name</h1>
+            <p class="detail-description">@product.Description</p>
+
+            <div class="detail-price">
+                <small>Giá bán</small>
+                <p>@product.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) ₫</p>
+            </div>
+
+            <form class="detail-purchase" method="post" asp-page="/Index" asp-page-handler="Add">
+                <input type="hidden" name="id" value="@product.Id" />
+                <button class="button button-primary" type="submit">Thêm vào giỏ hàng</button>
+            </form>
+            <a class="button button-outline" asp-page="/Index" asp-fragment="dien-thoai">Xem điện thoại khác</a>
+
+            <h2>Thông số kỹ thuật</h2>
+            <dl class="product-specs">
+                <div><dt>Thương hiệu</dt><dd>@product.Brand</dd></div>
+                <div><dt>Dung lượng</dt><dd>@product.Storage</dd></div>
+                <div><dt>Màu sắc</dt><dd>@product.Color</dd></div>
+                <div><dt>Màn hình</dt><dd>@product.Display</dd></div>
+                <div><dt>Bộ xử lý</dt><dd>@product.Chip</dd></div>
+                <div><dt>Camera sau</dt><dd>@product.Camera</dd></div>
+                <div><dt>Pin</dt><dd>@product.Battery</dd></div>
+            </dl>
+        </div>
+    </section>
+</div>

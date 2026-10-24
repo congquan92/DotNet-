@@ -1,0 +1,92 @@
+@page "/admin"
+@model ECommerceWeb.Pages.Admin.IndexModel
+
+@{
+    ViewData["Title"] = "Tổng quan";
+    var currency = CultureInfo.GetCultureInfo("vi-VN");
+}
+
+<section class="admin-page-heading" aria-labelledby="admin-title">
+    <div>
+        <p class="eyebrow">KHÔNG GIAN QUẢN TRỊ</p>
+        <h1 id="admin-title">Tổng quan cửa hàng<span>.</span></h1>
+        <p>Danh mục điện thoại của Mobi, gọn trong một màn hình.</p>
+    </div>
+    <a class="button button-outline" asp-page="/Index">Xem cửa hàng <span aria-hidden="true">↗</span></a>
+</section>
+
+<section class="admin-stats" aria-label="Thống kê danh mục sản phẩm">
+    <div class="admin-stat admin-stat-primary">
+        <div class="admin-stat-label">Điện thoại trong danh mục <span aria-hidden="true">01</span></div>
+        <strong>@Model.Products.Count.ToString("D2")</strong>
+        <p>Mẫu điện thoại đang hiển thị</p>
+    </div>
+    <div class="admin-stat">
+        <div class="admin-stat-label">Thương hiệu <span aria-hidden="true">02</span></div>
+        <strong>@Model.BrandCount.ToString("D2")</strong>
+        <p>@string.Join(" · ", Model.Products.Select(product => product.Brand).Distinct())</p>
+    </div>
+    <div class="admin-stat">
+        <div class="admin-stat-label">Giá thấp nhất <span aria-hidden="true">03</span></div>
+        <strong class="admin-stat-price">@Model.LowestPrice.ToString("N0", currency)<small>₫</small></strong>
+        <p>Trong danh mục hiện tại</p>
+    </div>
+    <div class="admin-stat">
+        <div class="admin-stat-label">Giá cao nhất <span aria-hidden="true">04</span></div>
+        <strong class="admin-stat-price">@Model.HighestPrice.ToString("N0", currency)<small>₫</small></strong>
+        <p>Trong danh mục hiện tại</p>
+    </div>
+</section>
+
+<section class="admin-catalog" id="admin-products" aria-labelledby="admin-products-title">
+    <div class="admin-section-heading">
+        <div>
+            <p class="eyebrow">BỘ SƯU TẬP MOBI</p>
+            <h2 id="admin-products-title">Danh mục điện thoại</h2>
+        </div>
+        <span class="admin-count">@Model.Products.Count sản phẩm</span>
+    </div>
+
+    <div class="admin-table-scroll" role="region" aria-label="Danh mục điện thoại, có thể cuộn ngang trên màn hình nhỏ" tabindex="0">
+        <table class="admin-product-table">
+            <caption class="admin-sr-only">Sản phẩm, thương hiệu, dung lượng và giá bán trong cửa hàng Mobi</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Sản phẩm</th>
+                    <th scope="col">Thương hiệu</th>
+                    <th scope="col">Dung lượng</th>
+                    <th scope="col" class="admin-price-column">Giá bán</th>
+                    <th scope="col"><span class="admin-sr-only">Chi tiết sản phẩm</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model.Products)
+                {
+                    <tr>
+                        <th scope="row">
+                            <div class="admin-product">
+                                <a class="admin-product-image" asp-page="/Product" asp-route-id="@product.Id" tabindex="-1" aria-hidden="true">
+                                    <img src="@product.ImageUrl" alt="" width="64" height="72" loading="lazy" />
+                                </a>
+                                <div>
+                                    <a class="admin-product-name" asp-page="/Product" asp-route-id="@product.Id">@product.Name</a>
+                                    <p>@product.Color</p>
+                                </div>
+                            </div>
+                        </th>
+                        <td><span class="admin-brand-tag">@product.Brand</span></td>
+                        <td>@product.Storage</td>
+                        <td class="admin-price-column">@product.Price.ToString("N0", currency) ₫</td>
+                        <td class="admin-detail-column"><a class="admin-detail-link" asp-page="/Product" asp-route-id="@product.Id" aria-label="Xem chi tiết @product.Name">Xem <span aria-hidden="true">↗</span></a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="admin-catalog-note">Giá hiển thị theo danh mục sản phẩm hiện tại của cửa hàng.</div>
+</section>
+
+<footer class="admin-page-footer">
+    <span>Mobi · Không gian quản trị</span>
+    <span>Dữ liệu từ danh mục cửa hàng</span>
+</footer>

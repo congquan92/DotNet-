@@ -1,0 +1,74 @@
+@page
+@model ECommerceWeb.Pages.IndexModel
+@{
+    ViewData["Title"] = "Điện thoại cho điều bạn thích";
+    var featured = Model.Products[0];
+    var currency = CultureInfo.GetCultureInfo("vi-VN");
+}
+
+<div class="page-shell home-page">
+    <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+            <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> CHẠM VÀO ĐIỀU MỚI</p>
+            <h1 id="hero-title">Đổi điện thoại.<br /><span>Nâng trải nghiệm.</span></h1>
+            <p class="hero-description">Từ những khoảnh khắc thường ngày đến điều bạn đang ấp ủ. Tìm chiếc điện thoại sẵn sàng đồng hành cùng bạn.</p>
+            <div class="hero-actions">
+                <a class="button button-primary" href="#dien-thoai">Khám phá điện thoại <span aria-hidden="true">↗</span></a>
+                <a class="text-link" asp-page="/Product" asp-route-id="@featured.Id">Gặp gỡ iPhone 16 Pro Max <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="hero-note"><span class="hero-note-line" aria-hidden="true"></span> Apple & Samsung. Những lựa chọn đáng khám phá.</div>
+        </div>
+        <a class="hero-visual" asp-page="/Product" asp-route-id="@featured.Id" aria-label="Xem chi tiết @featured.Name">
+            <div class="hero-visual-top"><span class="feature-label">TÂM ĐIỂM</span><span class="circle-arrow" aria-hidden="true">↗</span></div>
+            <span class="hero-background-word" aria-hidden="true">Pro.</span>
+            <img class="hero-phone" src="@featured.ImageUrl" alt="@featured.Name màu @featured.Color" width="600" height="600" fetchpriority="high" />
+            <div class="hero-visual-bottom"><div><span>THIẾT KẾ TITAN. HIỆU NĂNG PRO.</span><h2>@featured.Name</h2></div><span class="storage-tag">@featured.Storage</span></div>
+        </a>
+    </section>
+
+    <div class="collection-navigation" aria-label="Bộ sưu tập theo thương hiệu">
+        <a href="#apple"><span class="collection-number">01</span><strong>Apple</strong><span>Trải nghiệm iPhone <span aria-hidden="true">↗</span></span></a>
+        <a href="#samsung"><span class="collection-number">02</span><strong>Samsung</strong><span>Khám phá Galaxy <span aria-hidden="true">↗</span></span></a>
+    </div>
+
+    <section class="catalog" id="dien-thoai" aria-labelledby="catalog-title">
+        <div class="section-heading">
+            <div><p class="eyebrow">BỘ SƯU TẬP ĐƯỢC CHỌN LỌC</p><h2 id="catalog-title">Tìm chiếc điện thoại của bạn.</h2></div>
+            <p>@Model.Products.Count lựa chọn.<br />Một chiếc dành cho bạn.</p>
+        </div>
+        @foreach (var collection in Model.Products.GroupBy(product => product.Brand))
+        {
+            <div class="collection-heading" id="@collection.Key.ToLowerInvariant()"><h3>@collection.Key</h3><span>@collection.Count() sản phẩm</span></div>
+            <div class="product-grid">
+                @foreach (var product in collection)
+                {
+                    <article class="product-card">
+                        <a class="product-image-link" asp-page="/Product" asp-route-id="@product.Id" aria-label="Xem chi tiết @product.Name">
+                            <span class="product-storage">@product.Storage</span>
+                            <img src="@product.ImageUrl" alt="@product.Name màu @product.Color" width="400" height="400" loading="lazy" />
+                            <span class="product-image-arrow" aria-hidden="true">↗</span>
+                        </a>
+                        <div class="product-card-content">
+                            <p class="product-brand">@product.Brand <span>· @product.Color</span></p>
+                            <h4><a class="product-name" asp-page="/Product" asp-route-id="@product.Id">@product.Name</a></h4>
+                            <p class="product-card-description">@product.Description</p>
+                            <div class="product-card-bottom">
+                                <p class="product-price">@product.Price.ToString("N0", currency) <span>₫</span></p>
+                                <form method="post" asp-page-handler="Add">
+                                    <input type="hidden" name="id" value="@product.Id" />
+                                    <button type="submit" class="add-to-cart" aria-label="Thêm @product.Name vào giỏ hàng" title="Thêm vào giỏ hàng">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7Z" /><path d="M8 8V6a4 4 0 0 1 8 0v2M9 14h6m-3-3v6" /></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+    <section class="closing-banner">
+        <div><p class="eyebrow">NHỎ GỌN TRONG TAY. RỘNG MỞ MỖI NGÀY.</p><h2>Chiếc điện thoại tiếp theo,<br />bắt đầu từ đây.</h2></div>
+        <a class="button button-light" href="#dien-thoai">Chọn điện thoại của bạn <span aria-hidden="true">↗</span></a>
+    </section>
+</div>
