@@ -1,0 +1,9 @@
+1. Tạo Web API (Dùng làm Backend RESTful API)
+   dotnet new webapi -o TenProjectCuaBan
+2. Tạo Web App dạng MVC (Model-View-Controller)
+   dotnet new mvc -o TenProjectCuaBan
+   ...
+
+# 2. Khởi chạy và tự động cập nhật khi sửa code (giống npm run dev)
+
+dotnet watch
