@@ -1,0 +1,254 @@
+@page "/admin/products"
+@layout AdminLayout
+@rendermode InteractiveServer
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<PageTitle>Quản lý sản phẩm - Admin</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold m-0">🏷️ Quản Lý Sản Phẩm</h2>
+        <p class="text-muted small m-0">Thêm, sửa, xóa và quản lý danh mục sản phẩm</p>
+    </div>
+    <button class="btn btn-success fw-semibold" @onclick="OpenAddModal">
+        + Thêm Sản Phẩm Mới
+    </button>
+</div>
+
+@if (!string.IsNullOrEmpty(statusMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        ✅ @statusMessage
+        <button type="button" class="btn-close" @onclick="() => statusMessage = null"></button>
+    </div>
+}
+
+<div class="card border-0 shadow-sm bg-white p-4">
+    @if (products == null)
+    {
+        <div class="text-center py-4 text-muted">Đang tải danh sách sản phẩm...</div>
+    }
+    else if (products.Count == 0)
+    {
+        <div class="text-center py-5 text-muted">Chưa có sản phẩm nào. Hãy bấm "+ Thêm Sản Phẩm Mới".</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 60px;">ID</th>
+                        <th style="width: 80px;">Hình ảnh</th>
+                        <th>Tên Sản Phẩm</th>
+                        <th>Danh Mục</th>
+                        <th>Đơn Giá</th>
+                        <th class="text-center">Tồn Kho</th>
+                        <th class="text-center" style="width: 150px;">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var prod in products)
+                    {
+                        <tr>
+                            <td class="fw-bold">@prod.Id</td>
+                            <td>
+                                <img src="@prod.ImageUrl" alt="@prod.Name" class="rounded object-fit-contain bg-light p-1 border"
+                                     style="width: 50px; height: 50px;"
+                                     onerror="this.src='https://placehold.co/50x50?text=No+Img'" />
+                            </td>
+                            <td>
+                                <div class="fw-semibold">@prod.Name</div>
+                                <small class="text-muted text-truncate d-inline-block" style="max-width: 250px;">
+                                    @prod.Description
+                                </small>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary-subtle text-secondary">
+                                    @(prod.Category?.Name ?? "N/A")
+                                </span>
+                            </td>
+                            <td class="fw-bold text-danger">@prod.Price.ToString("N0") đ</td>
+                            <td class="text-center">
+                                <span class="badge @(prod.Stock > 10 ? "bg-success" : "bg-warning")">
+                                    @prod.Stock
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(prod)">
+                                    ✏️ Sửa
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteProduct(prod)">
+                                    🗑️ Xóa
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Modal Thêm / Sửa Sản phẩm -->
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">@(editingProduct.Id == 0 ? "Thêm Sản Phẩm Mới" : "Chỉnh Sửa Sản Phẩm")</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Tên sản phẩm *</label>
+                        <input type="text" class="form-control" @bind="editingProduct.Name" placeholder="Tên sản phẩm..." />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Danh mục *</label>
+                        <select class="form-select" @bind="editingProduct.CategoryId">
+                            @if (categories != null)
+                            {
+                                @foreach (var cat in categories)
+                                {
+                                    <option value="@cat.Id">@cat.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">Giá bán (VNĐ) *</label>
+                            <input type="number" class="form-control" @bind="editingProduct.Price" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">Số lượng tồn kho *</label>
+                            <input type="number" class="form-control" @bind="editingProduct.Stock" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">URL hình ảnh</label>
+                        <input type="url" class="form-control" @bind="editingProduct.ImageUrl" placeholder="https://..." />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Mô tả sản phẩm</label>
+                        <textarea class="form-control" rows="3" @bind="editingProduct.Description" placeholder="Mô tả tóm tắt..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy bỏ</button>
+                    <button type="button" class="btn btn-success" @onclick="SaveProduct">Lưu Sản Phẩm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Product>? products;
+    private List<Category>? categories;
+    private Product editingProduct = new();
+    private bool showModal = false;
+    private string? statusMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        await using var context = await DbFactory.CreateDbContextAsync();
+        categories = await context.Categories.OrderBy(c => c.Name).ToListAsync();
+        products = await context.Products
+            .Include(p => p.Category)
+            .OrderByDescending(p => p.Id)
+            .ToListAsync();
+    }
+
+    private void OpenAddModal()
+    {
+        editingProduct = new Product
+        {
+            CategoryId = categories?.FirstOrDefault()?.Id ?? 1,
+            Stock = 50,
+            Price = 1000000,
+            ImageUrl = "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&auto=format&fit=crop&q=60"
+        };
+        showModal = true;
+    }
+
+    private void OpenEditModal(Product prod)
+    {
+        editingProduct = new Product
+        {
+            Id = prod.Id,
+            Name = prod.Name,
+            Description = prod.Description,
+            Price = prod.Price,
+            Stock = prod.Stock,
+            CategoryId = prod.CategoryId,
+            ImageUrl = prod.ImageUrl
+        };
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+    }
+
+    private async Task SaveProduct()
+    {
+        if (string.IsNullOrWhiteSpace(editingProduct.Name))
+        {
+            return;
+        }
+
+        await using var context = await DbFactory.CreateDbContextAsync();
+
+        if (editingProduct.Id == 0)
+        {
+            context.Products.Add(editingProduct);
+            await context.SaveChangesAsync();
+            statusMessage = $"Đã thêm sản phẩm \"{editingProduct.Name}\" thành công!";
+        }
+        else
+        {
+            var dbProduct = await context.Products.FindAsync(editingProduct.Id);
+            if (dbProduct != null)
+            {
+                dbProduct.Name = editingProduct.Name;
+                dbProduct.Description = editingProduct.Description;
+                dbProduct.Price = editingProduct.Price;
+                dbProduct.Stock = editingProduct.Stock;
+                dbProduct.CategoryId = editingProduct.CategoryId;
+                dbProduct.ImageUrl = editingProduct.ImageUrl;
+
+                await context.SaveChangesAsync();
+                statusMessage = $"Đã cập nhật sản phẩm \"{editingProduct.Name}\" thành công!";
+            }
+        }
+
+        showModal = false;
+        await LoadData();
+    }
+
+    private async Task DeleteProduct(Product prod)
+    {
+        await using var context = await DbFactory.CreateDbContextAsync();
+        var dbProduct = await context.Products.FindAsync(prod.Id);
+        if (dbProduct != null)
+        {
+            context.Products.Remove(dbProduct);
+            await context.SaveChangesAsync();
+            statusMessage = $"Đã xóa sản phẩm \"{prod.Name}\" khỏi database!";
+            await LoadData();
+        }
+    }
+}

@@ -1,0 +1,400 @@
+@page "/profile"
+@rendermode InteractiveServer
+@inject AuthService Auth
+@inject IDbContextFactory<AppDbContext> DbFactory
+@inject NavigationManager Navigation
+
+<PageTitle>Hồ sơ & Đơn hàng - Blazor E-Commerce</PageTitle>
+
+<div class="container py-4">
+    @if (!Auth.IsLoggedIn)
+    {
+        <div class="card border-0 shadow-sm p-5 text-center bg-white my-4">
+            <div class="fs-1 text-warning mb-3">🔒</div>
+            <h4 class="fw-bold">Bạn chưa đăng nhập</h4>
+            <p class="text-muted">Vui lòng đăng nhập để xem thông tin tài khoản và theo dõi lịch sử đơn hàng của bạn.</p>
+            <div class="mt-3">
+                <a href="login" class="btn btn-primary px-4 py-2 fw-semibold">
+                    🔑 Đăng Nhập Ngay
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Header Profile Banner -->
+        <div class="card border-0 shadow-sm bg-primary text-white p-4 mb-4 rounded-4">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center shadow"
+                         style="width: 65px; height: 65px; font-size: 2rem;">
+                        👤
+                    </div>
+                    <div>
+                        <h4 class="fw-bold m-0">@Auth.CurrentUser?.FullName</h4>
+                        <div class="d-flex align-items-center gap-2 mt-1">
+                            <span class="badge bg-warning text-dark fw-bold">
+                                @(Auth.IsAdmin ? "👑 Quản Trị Viên" : "🛍️ Khách Hàng Thành Viên")
+                            </span>
+                            <span class="small text-white-50">Tài khoản: <b>@Auth.CurrentUser?.Username</b></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    @if (Auth.IsAdmin)
+                    {
+                        <a href="admin/dashboard" class="btn btn-light btn-sm fw-semibold shadow-sm">
+                            ⚙️ Trang Quản Trị Admin
+                        </a>
+                    }
+                    <a href="/api/auth/logout" class="btn btn-outline-light btn-sm fw-semibold">
+                        🚪 Đăng xuất
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(statusMessage))
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                ✅ @statusMessage
+                <button type="button" class="btn-close" @onclick="() => statusMessage = null"></button>
+            </div>
+        }
+
+        <!-- Tabs Navigation -->
+        <div class="card border-0 shadow-sm bg-white overflow-hidden rounded-4">
+            <div class="card-header bg-white border-bottom p-0">
+                <ul class="nav nav-tabs nav-fill card-header-tabs m-0 border-0">
+                    <li class="nav-item">
+                        <button class="nav-link py-3 fw-bold @(activeTab == "orders" ? "active text-primary border-primary border-bottom-3" : "text-muted")"
+                                @onclick="@(() => activeTab = "orders")">
+                            📦 Lịch Sử Mua Hàng & Quản Lý Đơn (@(userOrders?.Count ?? 0))
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link py-3 fw-bold @(activeTab == "profile" ? "active text-primary border-primary border-bottom-3" : "text-muted")"
+                                @onclick="@(() => activeTab = "profile")">
+                            👤 Thông Tin Tài Khoản
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body p-4">
+                @if (activeTab == "profile")
+                {
+                    <!-- TAB 1: THÔNG TIN TÀI KHOẢN -->
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <h5 class="fw-bold mb-3 pb-2 border-bottom">Chi Tiết Thông Tin Cá Nhân</h5>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-muted">Tên đăng nhập</label>
+                                    <input type="text" class="form-control bg-light" value="@Auth.CurrentUser?.Username" disabled />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-muted">Vai trò hệ thống</label>
+                                    <input type="text" class="form-control bg-light" value="@(Auth.IsAdmin ? "Quản trị viên (Admin)" : "Khách hàng (User)")" disabled />
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Họ và Tên</label>
+                                    <input type="text" class="form-control" @bind="editFullName" placeholder="Nhập họ và tên..." />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Số điện thoại</label>
+                                    <input type="text" class="form-control" @bind="editPhone" placeholder="Nhập số điện thoại..." />
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold">Địa chỉ Email</label>
+                                    <input type="email" class="form-control" @bind="editEmail" placeholder="Nhập địa chỉ email..." />
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold">Địa chỉ nhận hàng mặc định</label>
+                                    <textarea class="form-control" rows="3" @bind="editAddress" placeholder="Nhập địa chỉ giao nhận hàng..."></textarea>
+                                </div>
+
+                                <div class="col-12 mt-4 text-end">
+                                    <button class="btn btn-primary px-4 fw-semibold" @onclick="HandleSaveProfile" disabled="@isSaving">
+                                        @if (isSaving)
+                                        {
+                                            <span class="spinner-border spinner-border-sm me-1"></span>
+                                            <span>Đang lưu...</span>
+                                        }
+                                        else
+                                        {
+                                            <span>💾 Lưu Thay Đổi</span>
+                                        }
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- TAB 2: LỊCH SỬ MUA HÀNG & QUẢN LÝ ĐƠN -->
+                    @if (isLoadingOrders)
+                    {
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="text-muted mt-2">Đang tải lịch sử đơn hàng từ PostgreSQL...</p>
+                        </div>
+                    }
+                    else if (userOrders == null || userOrders.Count == 0)
+                    {
+                        <div class="text-center py-5">
+                            <div class="fs-1 text-muted mb-3">🛒</div>
+                            <h5 class="fw-bold">Bạn chưa có đơn đặt hàng nào!</h5>
+                            <p class="text-muted">Các sản phẩm bạn mua sẽ được lưu trữ và hiển thị chi tiết tại đây.</p>
+                            <a href="products" class="btn btn-primary px-4 mt-2">
+                                Mua sắm ngay
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Thống kê nhanh -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-6 col-md-3">
+                                <div class="border rounded-3 p-3 text-center bg-light">
+                                    <small class="text-muted d-block">Tổng số đơn</small>
+                                    <span class="fs-4 fw-bold text-primary">@userOrders.Count</span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="border rounded-3 p-3 text-center bg-light">
+                                    <small class="text-muted d-block">Tổng chi tiêu</small>
+                                    <span class="fs-4 fw-bold text-danger">@userOrders.Sum(o => o.TotalAmount).ToString("N0") đ</span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="border rounded-3 p-3 text-center bg-light">
+                                    <small class="text-muted d-block">Đang xử lý</small>
+                                    <span class="fs-4 fw-bold text-warning">@userOrders.Count(o => o.Status == "Processing" || o.Status == "Pending")</span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="border rounded-3 p-3 text-center bg-light">
+                                    <small class="text-muted d-block">Hoàn thành</small>
+                                    <span class="fs-4 fw-bold text-success">@userOrders.Count(o => o.Status == "Delivered" || o.Status == "Completed")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Danh sách đơn hàng -->
+                        <div class="d-flex flex-column gap-3">
+                            @foreach (var order in userOrders)
+                            {
+                                <div class="card border shadow-sm rounded-3 overflow-hidden">
+                                    <!-- Order Header -->
+                                    <div class="card-header bg-light d-flex flex-wrap justify-content-between align-items-center py-3 gap-2">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="fw-bold text-dark fs-6">Đơn hàng #@order.Id</span>
+                                            <span class="text-muted small">📅 @order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                                        </div>
+
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="badge @GetStatusBadgeClass(order.Status) px-3 py-2">
+                                                @GetStatusText(order.Status)
+                                            </span>
+                                            <span class="fs-5 fw-bold text-danger">
+                                                @order.TotalAmount.ToString("N0") đ
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Order Body -->
+                                    <div class="card-body p-3">
+                                        <div class="mb-3 small text-muted">
+                                            📍 <b>Địa chỉ nhận hàng:</b> @order.ShippingAddress
+                                        </div>
+
+                                        <!-- Items List -->
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-borderless align-middle mb-0">
+                                                <tbody>
+                                                    @if (order.OrderDetails != null)
+                                                    {
+                                                        @foreach (var detail in order.OrderDetails)
+                                                        {
+                                                            <tr class="border-top">
+                                                                <td style="width: 60px;">
+                                                                    <div class="bg-light p-1 rounded border d-flex align-items-center justify-content-center"
+                                                                         style="width: 50px; height: 50px;">
+                                                                        <img src="@detail.Product?.ImageUrl"
+                                                                             class="object-fit-contain w-100 h-100"
+                                                                             alt="@detail.Product?.Name"
+                                                                             onerror="this.src='https://placehold.co/50x50?text=SP'" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="fw-semibold">@(detail.Product?.Name ?? "Sản phẩm")</div>
+                                                                    <small class="text-muted">Đơn giá: @detail.UnitPrice.ToString("N0") đ</small>
+                                                                </td>
+                                                                <td class="text-center" style="width: 90px;">
+                                                                    <span class="badge bg-secondary-subtle text-dark">x @detail.Quantity</span>
+                                                                </td>
+                                                                <td class="text-end fw-bold" style="width: 140px;">
+                                                                    @((detail.UnitPrice * detail.Quantity).ToString("N0")) đ
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private string activeTab = "orders";
+    private bool isLoadingOrders = true;
+    private bool isSaving = false;
+    private string? statusMessage;
+
+    private string editFullName = string.Empty;
+    private string editPhone = string.Empty;
+    private string editEmail = string.Empty;
+    private string editAddress = string.Empty;
+
+    private List<Order>? userOrders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Auth.EnsureInitializedAsync();
+        if (Auth.IsLoggedIn && Auth.CurrentUser != null)
+        {
+            editFullName = Auth.CurrentUser.FullName;
+            editPhone = Auth.CurrentUser.Phone;
+            editEmail = Auth.CurrentUser.Email;
+            editAddress = Auth.CurrentUser.Address;
+
+            await LoadOrdersAsync();
+        }
+    }
+
+    private async Task LoadOrdersAsync()
+    {
+        isLoadingOrders = true;
+        try
+        {
+            await using var context = await DbFactory.CreateDbContextAsync();
+            var accountId = Auth.CurrentUser?.Id;
+            var customerId = Auth.CurrentUser?.CustomerId;
+            var phone = Auth.CurrentUser?.Phone;
+
+            // Truy vấn các đơn hàng của tài khoản hoặc theo CustomerId/SĐT
+            var query = context.Orders
+                .Include(o => o.OrderDetails)
+                .ThenInclude(d => d.Product)
+                .Include(o => o.Customer)
+                .AsQueryable();
+
+            if (accountId.HasValue || customerId.HasValue)
+            {
+                query = query.Where(o => 
+                    (o.Customer != null && o.Customer.AccountId == accountId) ||
+                    (customerId.HasValue && o.CustomerId == customerId.Value) ||
+                    (!string.IsNullOrEmpty(phone) && o.Customer != null && o.Customer.Phone == phone));
+            }
+
+            userOrders = await query.OrderByDescending(o => o.OrderDate).ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[LoadOrders Error]: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingOrders = false;
+        }
+    }
+
+    private async Task HandleSaveProfile()
+    {
+        if (Auth.CurrentUser == null) return;
+        isSaving = true;
+        statusMessage = null;
+
+        try
+        {
+            await using var context = await DbFactory.CreateDbContextAsync();
+            var accountId = Auth.CurrentUser.Id;
+
+            var customer = await context.Customers.FirstOrDefaultAsync(c => c.AccountId == accountId);
+            if (customer == null)
+            {
+                customer = new Customer
+                {
+                    AccountId = accountId,
+                    FullName = editFullName.Trim(),
+                    Phone = editPhone.Trim(),
+                    Email = editEmail.Trim(),
+                    Address = editAddress.Trim()
+                };
+                context.Customers.Add(customer);
+            }
+            else
+            {
+                customer.FullName = editFullName.Trim();
+                customer.Phone = editPhone.Trim();
+                customer.Email = editEmail.Trim();
+                customer.Address = editAddress.Trim();
+            }
+
+            await context.SaveChangesAsync();
+
+            // Cập nhật session in-memory
+            await Auth.UpdateProfileAsync(customer.FullName, customer.Email, customer.Phone, customer.Address);
+
+            statusMessage = "Cập nhật thông tin tài khoản thành công!";
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Lỗi khi lưu thông tin: {ex.Message}";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void HandleLogout()
+    {
+        Navigation.NavigateTo("/api/auth/logout", forceLoad: true);
+    }
+
+    private string GetStatusBadgeClass(string status) => status switch
+    {
+        "Pending" => "bg-warning text-dark",
+        "Processing" => "bg-info text-white",
+        "Shipped" => "bg-primary text-white",
+        "Delivered" or "Completed" => "bg-success text-white",
+        "Cancelled" => "bg-danger text-white",
+        _ => "bg-secondary text-white"
+    };
+
+    private string GetStatusText(string status) => status switch
+    {
+        "Pending" => "Chờ xử lý",
+        "Processing" => "Đang chuẩn bị hàng",
+        "Shipped" => "Đang giao hàng",
+        "Delivered" or "Completed" => "Đã giao thành công",
+        "Cancelled" => "Đã hủy",
+        _ => status
+    };
+}

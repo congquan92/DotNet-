@@ -1,0 +1,396 @@
+@page "/admin/accounts"
+@layout AdminLayout
+@rendermode InteractiveServer
+@inject IDbContextFactory<AppDbContext> DbFactory
+@inject AuthService Auth
+
+<PageTitle>Quản lý tài khoản - Admin</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold m-0">🔐 Quản Lý Tài Khoản</h2>
+        <p class="text-muted small m-0">Quản lý tài khoản người dùng và trạng thái hoạt động trong hệ thống</p>
+    </div>
+    <button class="btn btn-primary fw-semibold" @onclick="OpenAddModal">
+        + Thêm Tài Khoản Mới
+    </button>
+</div>
+
+@if (!string.IsNullOrEmpty(statusMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        ✅ @statusMessage
+        <button type="button" class="btn-close" @onclick="() => statusMessage = null"></button>
+    </div>
+}
+
+<div class="card border-0 shadow-sm bg-white p-4">
+    @if (accounts == null)
+    {
+        <div class="text-center py-4 text-muted">Đang tải danh sách tài khoản...</div>
+    }
+    else if (accounts.Count == 0)
+    {
+        <div class="text-center py-5 text-muted">Chưa có tài khoản nào.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên Đăng Nhập</th>
+                        <th>Họ Tên Khách Hàng</th>
+                        <th>Vai Trò (Role)</th>
+                        <th>Trạng Thái</th>
+                        <th class="text-center" style="width: 220px;">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var acc in accounts)
+                    {
+                        <tr>
+                            <td class="fw-bold">#@acc.Id</td>
+                            <td class="fw-semibold">@acc.Username</td>
+                            <td>@(acc.Customer?.FullName ?? "(Chưa liên kết hồ sơ)")</td>
+                            <td>
+                                @if (acc.Role == "Admin")
+                                {
+                                    <span class="badge bg-danger">Admin</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-primary">User</span>
+                                }
+                            </td>
+                            <td>
+                                @if (acc.Status == "Active")
+                                {
+                                    <span class="badge bg-success">Đang hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Đã khóa</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (acc.Username == "admin" || (Auth.CurrentUser != null && acc.Id == Auth.CurrentUser.Id))
+                                {
+                                    <button class="btn btn-sm btn-outline-secondary me-1" disabled title="Tài khoản Admin hệ thống">
+                                        🛡️ Hệ thống
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-outline-danger me-1"
+                                            @onclick="() => OpenDeleteModal(acc)"
+                                            title="Xóa tài khoản và hồ sơ khách hàng liên quan">
+                                        🗑️ Xóa
+                                    </button>
+                                }
+                                <button class="btn btn-sm @(acc.Status == "Active" ? "btn-outline-warning" : "btn-outline-success")"
+                                        @onclick="() => ToggleStatus(acc)"
+                                        disabled="@(acc.Username == "admin")"
+                                        title="@(acc.Status == "Active" ? "Khóa tài khoản" : "Mở khóa tài khoản")">
+                                    @(acc.Status == "Active" ? "🔒 Khóa" : "🔓 Mở")
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Modal Xác Nhận Xóa Tài Khoản (Kèm Hồ Sơ Khách Hàng) -->
+@if (showDeleteModal && accountToDelete != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.6); z-index: 1055;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-danger text-white p-3">
+                    <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+                        <span>⚠️</span>
+                        <span>Xác Nhận Xóa Tài Khoản & Khách Hàng</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseDeleteModal" disabled="@isDeleting"></button>
+                </div>
+                <div class="modal-body p-4 bg-light">
+                    <!-- Alert cảnh báo -->
+                    <div class="alert alert-danger d-flex align-items-center gap-2 mb-3 shadow-sm border-0">
+                        <span class="fs-4">🚨</span>
+                        <div class="small fw-semibold">
+                            CẢNH BÁO: Hành động này KHÔNG THỂ HOÀN TÁC! Toàn bộ tài khoản và dữ liệu khách hàng liên quan sẽ bị xóa vĩnh viễn khỏi Database.
+                        </div>
+                    </div>
+
+                    <!-- Chi tiết tài khoản sẽ bị xóa -->
+                    <div class="card border-0 shadow-sm p-3 mb-3 bg-white rounded-3">
+                        <h6 class="fw-bold text-dark border-bottom pb-2 mb-2 d-flex align-items-center gap-2">
+                            <span>🔐</span>
+                            <span>Thông tin tài khoản sẽ xóa:</span>
+                        </h6>
+                        <div class="row g-2 small">
+                            <div class="col-4 text-muted">ID Tài khoản:</div>
+                            <div class="col-8 fw-bold">#@accountToDelete.Id</div>
+                            <div class="col-4 text-muted">Tên đăng nhập:</div>
+                            <div class="col-8 fw-bold text-primary">@accountToDelete.Username</div>
+                            <div class="col-4 text-muted">Vai trò:</div>
+                            <div class="col-8"><span class="badge bg-primary">@accountToDelete.Role</span></div>
+                            <div class="col-4 text-muted">Trạng thái:</div>
+                            <div class="col-8">@(accountToDelete.Status == "Active" ? "Đang hoạt động" : "Đã khóa")</div>
+                        </div>
+                    </div>
+
+                    <!-- Chi tiết khách hàng liên kết -->
+                    <div class="card border-0 shadow-sm p-3 bg-white rounded-3">
+                        <h6 class="fw-bold text-dark border-bottom pb-2 mb-2 d-flex align-items-center gap-2">
+                            <span>👥</span>
+                            <span>Hồ sơ khách hàng liên kết (Sẽ bị xóa kèm):</span>
+                        </h6>
+                        @if (customerToDelete != null)
+                        {
+                            <div class="row g-2 small">
+                                <div class="col-4 text-muted">Mã khách hàng:</div>
+                                <div class="col-8 fw-bold">#@customerToDelete.Id</div>
+                                <div class="col-4 text-muted">Họ và tên:</div>
+                                <div class="col-8 fw-bold text-danger">@customerToDelete.FullName</div>
+                                <div class="col-4 text-muted">Số điện thoại:</div>
+                                <div class="col-8">@customerToDelete.Phone</div>
+                                <div class="col-4 text-muted">Email:</div>
+                                <div class="col-8">@customerToDelete.Email</div>
+                                <div class="col-4 text-muted">Địa chỉ:</div>
+                                <div class="col-8">@customerToDelete.Address</div>
+                                <div class="col-4 text-muted">Đơn hàng liên quan:</div>
+                                <div class="col-8 fw-bold text-danger">@ordersCountToDelete đơn hàng</div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-muted small fst-italic py-2">
+                                (Tài khoản này chưa có dữ liệu liên kết bên Quản lý khách hàng)
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer bg-white border-top">
+                    <button type="button" class="btn btn-secondary px-3" @onclick="CloseDeleteModal" disabled="@isDeleting">
+                        Hủy Bỏ
+                    </button>
+                    <button type="button" class="btn btn-danger px-4 fw-bold shadow-sm" @onclick="ConfirmDeleteAccount" disabled="@isDeleting">
+                        @if (isDeleting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1"></span>
+                            <span>Đang xóa vĩnh viễn trong DB...</span>
+                        }
+                        else
+                        {
+                            <span>🗑️ Xác Nhận Xóa Vĩnh Viễn</span>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal Thêm Tài khoản -->
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1050;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4 overflow-hidden">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">Thêm Tài Khoản Mới</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body p-4 bg-white">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Tên đăng nhập (Username) *</label>
+                        <input type="text" class="form-control" @bind="newUsername" placeholder="ví dụ: user2..." />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Mật khẩu *</label>
+                        <input type="password" class="form-control" @bind="newPassword" placeholder="Nhập mật khẩu..." />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Vai trò (Role) *</label>
+                        <select class="form-select" @bind="newRole">
+                            <option value="User">User (Người dùng thường)</option>
+                            <option value="Admin">Admin (Quản trị viên)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy bỏ</button>
+                    <button type="button" class="btn btn-primary px-3" @onclick="CreateAccount">Tạo Tài Khoản</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Account>? accounts;
+    private bool showModal = false;
+    private string newUsername = string.Empty;
+    private string newPassword = string.Empty;
+    private string newRole = "User";
+    private string? statusMessage;
+
+    // Delete Modal State
+    private Account? accountToDelete;
+    private Customer? customerToDelete;
+    private int ordersCountToDelete = 0;
+    private bool showDeleteModal = false;
+    private bool isDeleting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAccounts();
+    }
+
+    private async Task LoadAccounts()
+    {
+        await using var context = await DbFactory.CreateDbContextAsync();
+        accounts = await context.Accounts
+            .Include(a => a.Customer)
+            .OrderBy(a => a.Id)
+            .ToListAsync();
+    }
+
+    private void OpenAddModal()
+    {
+        newUsername = string.Empty;
+        newPassword = string.Empty;
+        newRole = "User";
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+    }
+
+    private async Task CreateAccount()
+    {
+        if (string.IsNullOrWhiteSpace(newUsername) || string.IsNullOrWhiteSpace(newPassword))
+        {
+            return;
+        }
+
+        await using var context = await DbFactory.CreateDbContextAsync();
+
+        if (await context.Accounts.AnyAsync(a => a.Username == newUsername.Trim()))
+        {
+            statusMessage = "Tên đăng nhập đã tồn tại!";
+            return;
+        }
+
+        var account = new Account
+        {
+            Username = newUsername.Trim(),
+            Password = newPassword.Trim(),
+            Role = newRole,
+            Status = "Active"
+        };
+
+        context.Accounts.Add(account);
+        await context.SaveChangesAsync();
+
+        statusMessage = $"Đã tạo tài khoản \"{account.Username}\" thành công!";
+        showModal = false;
+        await LoadAccounts();
+    }
+
+    private async Task OpenDeleteModal(Account acc)
+    {
+        await using var context = await DbFactory.CreateDbContextAsync();
+        accountToDelete = await context.Accounts
+            .Include(a => a.Customer)
+                .ThenInclude(c => c!.Orders)
+            .FirstOrDefaultAsync(a => a.Id == acc.Id);
+
+        if (accountToDelete != null)
+        {
+            customerToDelete = accountToDelete.Customer;
+            ordersCountToDelete = customerToDelete?.Orders?.Count ?? 0;
+            showDeleteModal = true;
+        }
+    }
+
+    private void CloseDeleteModal()
+    {
+        if (!isDeleting)
+        {
+            showDeleteModal = false;
+            accountToDelete = null;
+            customerToDelete = null;
+        }
+    }
+
+    private async Task ConfirmDeleteAccount()
+    {
+        if (accountToDelete == null) return;
+        isDeleting = true;
+
+        try
+        {
+            await using var context = await DbFactory.CreateDbContextAsync();
+            var dbAcc = await context.Accounts
+                .Include(a => a.Customer)
+                    .ThenInclude(c => c!.Orders)
+                        .ThenInclude(o => o.OrderDetails)
+                .FirstOrDefaultAsync(a => a.Id == accountToDelete.Id);
+
+            if (dbAcc != null)
+            {
+                var username = dbAcc.Username;
+                var customerName = dbAcc.Customer?.FullName;
+
+                // Xóa khách hàng liên kết (kèm cascade đơn hàng nếu có)
+                if (dbAcc.Customer != null)
+                {
+                    context.Customers.Remove(dbAcc.Customer);
+                }
+
+                // Xóa tài khoản trong DB
+                context.Accounts.Remove(dbAcc);
+
+                await context.SaveChangesAsync();
+
+                statusMessage = $"Đã xóa vĩnh viễn tài khoản \"{username}\"" +
+                    (!string.IsNullOrEmpty(customerName) ? $" và hồ sơ khách hàng \"{customerName}\" trong DB!" : " trong DB!");
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Lỗi khi xóa tài khoản: {ex.Message}";
+        }
+        finally
+        {
+            isDeleting = false;
+            showDeleteModal = false;
+            accountToDelete = null;
+            customerToDelete = null;
+            await LoadAccounts();
+        }
+    }
+
+    private async Task ToggleStatus(Account acc)
+    {
+        await using var context = await DbFactory.CreateDbContextAsync();
+        var dbAcc = await context.Accounts.FindAsync(acc.Id);
+        if (dbAcc != null)
+        {
+            dbAcc.Status = dbAcc.Status == "Active" ? "Locked" : "Active";
+            await context.SaveChangesAsync();
+            acc.Status = dbAcc.Status;
+            statusMessage = $"Tài khoản \"{acc.Username}\" hiện tại: {(acc.Status == "Active" ? "Đang hoạt động" : "Đã khóa")}";
+        }
+    }
+}

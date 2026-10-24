@@ -1,7 +1,181 @@
-﻿@page "/"
+@page "/"
+@rendermode InteractiveServer
+@inject IDbContextFactory<AppDbContext> DbFactory
+@inject CartService Cart
+@inject AuthService Auth
+@inject NavigationManager Navigation
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Trang chủ - Blazor E-Commerce</PageTitle>
 
-<h1>Hello, world!</h1>
+<!-- Hero Banner -->
+<section class="bg-primary text-white py-5 mb-5 shadow-sm rounded-bottom-4">
+    <div class="container text-center py-4">
+        <h1 class="display-4 fw-bold mb-3">Siêu Thị Công Nghệ Trực Tuyến</h1>
+        <p class="lead text-white-50 mb-4 mx-auto" style="max-width: 650px;">
+            Khám phá hàng loạt thiết bị công nghệ chính hãng, laptop, smartphone và phụ kiện cao cấp với mức giá ưu đãi nhất hôm nay.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="products" class="btn btn-warning btn-lg fw-bold px-4 shadow">
+                🛒 Khám Phá Sản Phẩm Ngay
+            </a>
+            <a href="about" class="btn btn-outline-light btn-lg px-4">
+                ℹ️ Về Chúng Tôi
+            </a>
+        </div>
+    </div>
+</section>
 
-Welcome to your new app.
+<div class="container mb-5">
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            ✅ @successMessage
+            <button type="button" class="btn-close" @onclick="() => successMessage = null"></button>
+        </div>
+    }
+
+    <!-- Danh mục nổi bật -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold m-0">📂 Danh Mục Nổi Bật</h3>
+            <a href="products" class="text-primary text-decoration-none fw-semibold">Xem tất cả &rarr;</a>
+        </div>
+
+        @if (categories == null)
+        {
+            <div class="text-center py-4 text-muted">Đang tải danh mục...</div>
+        }
+        else
+        {
+            <div class="row g-3">
+                @foreach (var cat in categories)
+                {
+                    <div class="col-6 col-md-3">
+                        <div class="card h-100 border-0 shadow-sm text-center p-3 hover-shadow"
+                             style="cursor: pointer; transition: transform 0.2s;"
+                             @onclick="() => GoToCategory(cat.Id)">
+                            <div class="fs-1 mb-2">💻</div>
+                            <h6 class="fw-bold mb-1">@cat.Name</h6>
+                            <p class="text-muted small m-0">@cat.Description</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Sản phẩm nổi bật -->
+    <div>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold m-0">🔥 Sản Phẩm Bán Chạy</h3>
+            <a href="products" class="text-primary text-decoration-none fw-semibold">Xem kho sản phẩm &rarr;</a>
+        </div>
+
+        @if (featuredProducts == null)
+        {
+            <div class="text-center py-5 text-muted">Đang tải sản phẩm từ PostgreSQL...</div>
+        }
+        else if (featuredProducts.Count == 0)
+        {
+            <div class="alert alert-warning text-center">Chưa có sản phẩm nào trong cơ sở dữ liệu.</div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var prod in featuredProducts)
+                {
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card h-100 border-0 shadow-sm overflow-hidden d-flex flex-column hover-shadow">
+                            <a href="products/@prod.Id" class="text-decoration-none">
+                                <div class="bg-light d-flex align-items-center justify-content-center p-2" style="height: 200px;">
+                                    <img src="@prod.ImageUrl" class="object-fit-contain w-100 h-100"
+                                         alt="@prod.Name"
+                                         onerror="this.src='https://placehold.co/400x300?text=No+Image'" />
+                                </div>
+                            </a>
+                            <div class="card-body d-flex flex-column p-3">
+                                <span class="badge bg-secondary-subtle text-secondary small align-self-start mb-2">
+                                    @(prod.Category?.Name ?? "Chung")
+                                </span>
+                                <a href="products/@prod.Id" class="text-decoration-none text-dark">
+                                    <h6 class="card-title fw-bold text-truncate" title="@prod.Name">@prod.Name</h6>
+                                </a>
+                                <p class="card-text text-muted small flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    @prod.Description
+                                </p>
+                                <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <span class="fs-5 fw-bold text-danger">@prod.Price.ToString("N0") đ</span>
+                                    <div class="d-flex align-items-center gap-1">
+                                        @if (Auth.IsLoggedIn)
+                                        {
+                                            <button class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1"
+                                                    @onclick="() => HandleAddToCart(prod)" title="Thêm vào giỏ">
+                                                + Giỏ hàng
+                                            </button>
+                                            <button class="btn btn-sm btn-danger rounded-pill px-2 py-1 fw-semibold shadow-sm"
+                                                    @onclick="() => HandleBuyNow(prod)" title="Mua ngay">
+                                                ⚡ Mua ngay
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <a href="products/@prod.Id" class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-1">
+                                                👁️ Chi tiết
+                                            </a>
+                                            <a href="login" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1 fw-semibold">
+                                                ⚡ Mua ngay
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Category>? categories;
+    private List<Product>? featuredProducts;
+    private string? successMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await using var context = await DbFactory.CreateDbContextAsync();
+        categories = await context.Categories.Take(4).ToListAsync();
+        featuredProducts = await context.Products
+            .Include(p => p.Category)
+            .Take(8)
+            .ToListAsync();
+    }
+
+    private void GoToCategory(int catId)
+    {
+        Navigation.NavigateTo($"products?category={catId}");
+    }
+
+    private void HandleAddToCart(Product product)
+    {
+        if (!Auth.IsLoggedIn)
+        {
+            Navigation.NavigateTo("login");
+            return;
+        }
+        Cart.AddToCart(product, 1);
+        successMessage = $"Đã thêm \"{product.Name}\" vào giỏ hàng thành công!";
+    }
+
+    private void HandleBuyNow(Product product)
+    {
+        if (!Auth.IsLoggedIn)
+        {
+            Navigation.NavigateTo("login");
+            return;
+        }
+        Cart.AddToCart(product, 1);
+        Navigation.NavigateTo("cart");
+    }
+}

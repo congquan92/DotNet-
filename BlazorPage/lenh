@@ -1,0 +1,11 @@
+# 1. Tạo file migration
+
+dotnet ef migrations add InitialCreate
+
+# Xoá migration
+
+dotnet ef migrations remove
+
+# 2. Áp dụng migration vào PostgreSQL
+
+dotnet ef database update

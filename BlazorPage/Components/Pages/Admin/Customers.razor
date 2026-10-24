@@ -1,0 +1,85 @@
+@page "/admin/customers"
+@layout AdminLayout
+@rendermode InteractiveServer
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<PageTitle>Quản lý khách hàng - Admin</PageTitle>
+
+<div class="mb-4">
+    <h2 class="fw-bold m-0">👥 Quản Lý Khách Hàng</h2>
+    <p class="text-muted small">Danh sách khách hàng đã đăng ký hoặc từng mua sắm trong hệ thống</p>
+</div>
+
+<div class="card border-0 shadow-sm bg-white p-4">
+    @if (customers == null)
+    {
+        <div class="text-center py-4 text-muted">Đang tải danh sách khách hàng...</div>
+    }
+    else if (customers.Count == 0)
+    {
+        <div class="text-center py-5 text-muted">Chưa có khách hàng nào trong hệ thống.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Họ và Tên</th>
+                        <th>Email</th>
+                        <th>Số Điện Thoại</th>
+                        <th>Địa Chỉ</th>
+                        <th>Tài Khoản Liên Kết</th>
+                        <th class="text-center">Số Đơn Hàng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in customers)
+                    {
+                        <tr>
+                            <td class="fw-bold">#@c.Id</td>
+                            <td class="fw-semibold">@c.FullName</td>
+                            <td>@c.Email</td>
+                            <td><span class="badge bg-light text-dark border">@c.Phone</span></td>
+                            <td class="small text-truncate" style="max-width: 250px;" title="@c.Address">
+                                @c.Address
+                            </td>
+                            <td>
+                                @if (c.Account != null)
+                                {
+                                    <span class="badge bg-primary-subtle text-primary">
+                                        👤 @c.Account.Username (@c.Account.Role)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Khách vãng lai</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-success-subtle text-success fs-6">
+                                    @c.Orders.Count
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Customer>? customers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await using var context = await DbFactory.CreateDbContextAsync();
+        customers = await context.Customers
+            .Include(c => c.Account)
+            .Include(c => c.Orders)
+            .OrderByDescending(c => c.Id)
+            .ToListAsync();
+    }
+}

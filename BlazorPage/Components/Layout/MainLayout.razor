@@ -1,23 +1,179 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject CartService Cart
+@inject AuthService Auth
+@implements IDisposable
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<div class="d-flex flex-column min-vh-100 bg-light">
+    <!-- Header / Navbar Storefront -->
+    <header class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top px-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
+                <span class="fs-4">🛍️</span>
+                <span>BLAZOR SHOP</span>
+            </a>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#userNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="userNav">
+                <!-- Main Nav Links -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-semibold">
+                    <li class="nav-item">
+                        <NavLink class="nav-link text-white" href="" Match="NavLinkMatch.All">Trang chủ</NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link text-white" href="products">Sản phẩm</NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link text-white" href="about">Giới thiệu</NavLink>
+                    </li>
+                </ul>
+
+                <!-- Search Bar -->
+                <form class="d-flex me-3 mb-2 mb-lg-0" @onsubmit="HandleSearch">
+                    <div class="input-group">
+                        <input type="search" class="form-control form-control-sm" placeholder="Tìm kiếm sản phẩm..."
+                               @bind="searchKeyword" />
+                        <button class="btn btn-warning btn-sm" type="submit">
+                            🔍
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Right Actions: Cart & Login -->
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Giỏ hàng -->
+                    <a href="cart" class="btn btn-outline-light btn-sm position-relative px-3 py-1 d-flex align-items-center gap-1">
+                        🛒 Giỏ hàng
+                        @if (Cart.TotalItems > 0)
+                        {
+                            <span class="badge rounded-pill bg-danger ms-1">@Cart.TotalItems</span>
+                        }
+                    </a>
+
+                    <!-- Đăng nhập / Tài khoản -->
+                    @if (Auth.IsLoggedIn)
+                    {
+                        <div class="dropdown">
+                            <button class="btn btn-warning btn-sm dropdown-toggle fw-semibold d-flex align-items-center gap-1 shadow-sm"
+                                    type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span>👤</span>
+                                <span>@Auth.CurrentUser?.FullName</span>
+                                <span class="badge bg-dark ms-1 small">@(Auth.IsAdmin ? "Admin" : "Khách hàng")</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="userDropdown">
+                                <li class="px-3 py-2 border-bottom bg-light">
+                                    <div class="small text-muted">Đang đăng nhập với:</div>
+                                    <div class="fw-bold text-truncate" style="max-width: 200px;">@Auth.CurrentUser?.Username</div>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="profile">
+                                        <span>📋</span>
+                                        <span>Hồ sơ & Đơn hàng của tôi</span>
+                                    </a>
+                                </li>
+                                @if (Auth.IsAdmin)
+                                {
+                                    <li>
+                                        <a class="dropdown-item py-2 text-danger fw-bold d-flex align-items-center gap-2" href="admin/dashboard">
+                                            <span>⚙️</span>
+                                            <span>Quản trị hệ thống</span>
+                                        </a>
+                                    </li>
+                                }
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li>
+                                    <a class="dropdown-item py-2 text-danger d-flex align-items-center gap-2" href="/api/auth/logout">
+                                        <span>🚪</span>
+                                        <span>Đăng xuất</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a href="login" class="btn btn-light btn-sm fw-semibold px-3 shadow-sm">
+                            🔑 Đăng nhập
+                        </a>
+                    }
+                </div>
+            </div>
         </div>
+    </header>
 
-        <article class="content px-4">
-            @Body
-        </article>
+    <!-- Main Storefront Content -->
+    <main class="flex-grow-1">
+        @Body
     </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-4 pb-3 mt-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5 class="fw-bold text-warning">🛍️ BLAZOR E-COMMERCE</h5>
+                    <p class="text-white-50 small">
+                        Hệ thống bán hàng trực tuyến xây dựng bằng Blazor Interactive Server và cơ sở dữ liệu PostgreSQL.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold text-uppercase">Liên kết nhanh</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="" class="text-white-50 text-decoration-none">Trang chủ</a></li>
+                        <li><a href="products" class="text-white-50 text-decoration-none">Danh sách sản phẩm</a></li>
+                        <li><a href="about" class="text-white-50 text-decoration-none">Giới thiệu cửa hàng</a></li>
+                        <li><a href="admin/dashboard" class="text-warning text-decoration-none">Trang quản trị (Admin)</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold text-uppercase">Liên hệ & Hỗ trợ</h6>
+                    <p class="text-white-50 small mb-1">📍 Địa chỉ: 123 Đường Công Nghệ, TP.HCM</p>
+                    <p class="text-white-50 small mb-1">📞 Hotline: 1900 6868</p>
+                    <p class="text-white-50 small">✉️ Email: support@blazorshop.vn</p>
+                </div>
+            </div>
+            <hr class="border-secondary my-3" />
+            <div class="text-center text-white-50 small">
+                &copy; 2026 BlazorShop. Bài tập thực hành BTT2 .NET & PostgreSQL.
+            </div>
+        </div>
+    </footer>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
+    Đã xảy ra lỗi không mong muốn.
+    <a href="." class="reload">Tải lại</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private string searchKeyword = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Cart.OnChange += StateHasChanged;
+        Auth.OnChange += StateHasChanged;
+        await Auth.EnsureInitializedAsync();
+    }
+
+    private void HandleSearch()
+    {
+        if (!string.IsNullOrWhiteSpace(searchKeyword))
+        {
+            Navigation.NavigateTo($"products?search={Uri.EscapeDataString(searchKeyword)}");
+        }
+        else
+        {
+            Navigation.NavigateTo("products");
+        }
+    }
+
+    public void Dispose()
+    {
+        Cart.OnChange -= StateHasChanged;
+        Auth.OnChange -= StateHasChanged;
+    }
+}
