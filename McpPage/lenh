@@ -1,0 +1,11 @@
+# 1. Chạy PostgreSQL bằng Docker
+docker compose up -d
+
+# 2. Tạo migration (nếu có thay đổi model)
+dotnet ef migrations add InitialCreate
+
+# 3. Cập nhật migration vào database McpDb
+dotnet ef database update
+
+# 4. Chạy ứng dụng (sẽ tự động seed dữ liệu Roles, Users, Categories, Products)
+dotnet run

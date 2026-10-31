@@ -1,0 +1,188 @@
+@model McpPage.Models.ProductListViewModel
+@{
+    ViewData["Title"] = !string.IsNullOrEmpty(Model.SelectedCategoryName) 
+        ? $"{Model.SelectedCategoryName} - MCP Shop" 
+        : "Danh Sách Sản Phẩm - MCP Shop";
+}
+
+<div class="container my-3">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-danger text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Products" asp-action="Index" class="text-danger text-decoration-none">Sản phẩm</a></li>
+            @if (!string.IsNullOrEmpty(Model.SelectedCategoryName))
+            {
+                <li class="breadcrumb-item active" aria-current="page">@Model.SelectedCategoryName</li>
+            }
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- ==========================================
+             SIDEBAR BỘ LỌC TRUYỀN THỐNG (Form GET)
+             ========================================== -->
+        <div class="col-12 col-lg-3">
+            <div class="bg-white rounded-4 p-3 shadow-sm border border-light">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h5 class="fw-bold m-0 fs-6"><i class="bi bi-funnel-fill text-danger me-1"></i> Bộ Lọc Tìm Kiếm</h5>
+                    <a asp-controller="Products" asp-action="Index" class="small text-muted text-decoration-none">Xóa lọc</a>
+                </div>
+
+                <form method="get" asp-controller="Products" asp-action="Index">
+                    <!-- Giữ lại từ khóa tìm kiếm nếu có -->
+                    @if (!string.IsNullOrEmpty(Model.Keyword))
+                    {
+                        <input type="hidden" name="keyword" value="@Model.Keyword" />
+                    }
+
+                    <!-- 1. Lọc theo Danh mục -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Danh mục</label>
+                        <div class="d-flex flex-column gap-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="categoryId" id="cat_all" value="" 
+                                       @(Model.SelectedCategoryId == null ? "checked" : "") />
+                                <label class="form-check-label small" for="cat_all">Tất cả danh mục</label>
+                            </div>
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="categoryId" id="cat_@cat.Id" value="@cat.Id" 
+                                           @(Model.SelectedCategoryId == cat.Id ? "checked" : "") />
+                                    <label class="form-check-label small" for="cat_@cat.Id">@cat.Name</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- 2. Lọc theo Khoảng giá -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Khoảng giá</label>
+                        <div class="d-flex flex-column gap-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="priceRange" id="pr_all" value="" 
+                                       @(string.IsNullOrEmpty(Model.PriceRange) ? "checked" : "") />
+                                <label class="form-check-label small" for="pr_all">Tất cả mức giá</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="priceRange" id="pr_u5" value="under5m" 
+                                       @(Model.PriceRange == "under5m" ? "checked" : "") />
+                                <label class="form-check-label small" for="pr_u5">Dưới 5 triệu</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="priceRange" id="pr_5_15" value="5m-15m" 
+                                       @(Model.PriceRange == "5m-15m" ? "checked" : "") />
+                                <label class="form-check-label small" for="pr_5_15">5 - 15 triệu</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="priceRange" id="pr_15_30" value="15m-30m" 
+                                       @(Model.PriceRange == "15m-30m" ? "checked" : "") />
+                                <label class="form-check-label small" for="pr_15_30">15 - 30 triệu</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="priceRange" id="pr_a30" value="above30m" 
+                                       @(Model.PriceRange == "above30m" ? "checked" : "") />
+                                <label class="form-check-label small" for="pr_a30">Trên 30 triệu</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Sắp xếp -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Sắp xếp theo</label>
+                        <select name="sortBy" class="form-select form-select-sm">
+                            <option value="" selected="@(string.IsNullOrEmpty(Model.SortBy))">Mới nhất</option>
+                            <option value="price_asc" selected="@(Model.SortBy == "price_asc")">Giá tăng dần</option>
+                            <option value="price_desc" selected="@(Model.SortBy == "price_desc")">Giá giảm dần</option>
+                            <option value="name_asc" selected="@(Model.SortBy == "name_asc")">Tên A-Z</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-cps-red w-100 py-2">
+                        <i class="bi bi-funnel me-1"></i> Áp dụng bộ lọc
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             DANH SÁCH SẢN PHẨM (Grid)
+             ========================================== -->
+        <div class="col-12 col-lg-9">
+            <!-- Header bar -->
+            <div class="bg-white rounded-4 p-3 shadow-sm border border-light mb-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                    <h5 class="fw-bold m-0 text-dark">
+                        @(Model.SelectedCategoryName ?? "Tất cả sản phẩm")
+                    </h5>
+                    <span class="text-muted small">Tìm thấy <strong>@Model.TotalCount</strong> sản phẩm</span>
+                    @if (!string.IsNullOrEmpty(Model.Keyword))
+                    {
+                        <span class="badge bg-danger-subtle text-danger ms-2">Từ khóa: "@Model.Keyword"</span>
+                    }
+                </div>
+            </div>
+
+            @if (!Model.Products.Any())
+            {
+                <div class="bg-white rounded-4 p-5 text-center shadow-sm">
+                    <i class="bi bi-box2 text-muted" style="font-size: 4rem;"></i>
+                    <h5 class="fw-bold mt-3">Không tìm thấy sản phẩm phù hợp</h5>
+                    <p class="text-muted small">Vui lòng thử lại với các tiêu chí hoặc mức giá khác.</p>
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-cps-red btn-sm px-4">
+                        Xem tất cả sản phẩm
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-2 row-cols-md-3 g-3">
+                    @foreach (var prod in Model.Products)
+                    {
+                        <div class="col">
+                            <div class="product-card">
+                                <span class="badge-discount">-12%</span>
+                                <span class="badge-installment">Trả góp 0%</span>
+
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@prod.Id" class="product-image-box">
+                                    <img src="@prod.ImageUrl" alt="@prod.Name" loading="lazy"
+                                         onerror="this.src='https://placehold.co/400x300?text=No+Image'" />
+                                </a>
+
+                                <div class="product-info">
+                                    <a asp-controller="Products" asp-action="Details" asp-route-id="@prod.Id" class="product-title" title="@prod.Name">
+                                        @prod.Name
+                                    </a>
+
+                                    <div class="product-price-box">
+                                        <div class="d-flex align-items-baseline">
+                                            <span class="product-price">@string.Format("{0:N0} đ", prod.Price)</span>
+                                            <span class="product-original-price">@string.Format("{0:N0} đ", prod.Price * 1.12m)</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="product-promo-box">
+                                        <i class="bi bi-check-circle-fill text-success me-1"></i> Sẵn hàng tại cửa hàng
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <div class="product-rating">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <span class="review-count">(5.0)</span>
+                                        </div>
+                                        <span class="badge bg-light text-muted border" style="font-size: 0.7rem;">Kho: @prod.Stock</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,251 @@
+@model McpPage.Models.HomeViewModel
+@{
+    ViewData["Title"] = "Trang Chủ - Siêu Thị Công Nghệ MCP Shop";
+}
+
+<div class="container">
+    <!-- ==========================================
+         1. HERO PROMOTION BANNER (Phong cách CellphoneS)
+         ========================================== -->
+    <div class="row g-3 mb-4">
+        <!-- Main Carousel -->
+        <div class="col-12 col-lg-8">
+            <div id="homeHeroCarousel" class="carousel slide shadow-sm rounded-4 overflow-hidden h-100" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="0" class="active"></button>
+                    <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="1"></button>
+                    <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="2"></button>
+                </div>
+                <div class="carousel-inner h-100">
+                    <div class="carousel-item active" style="min-height: 330px; background: linear-gradient(135deg, #1f2937, #111827);">
+                        <div class="d-flex flex-column justify-content-center h-100 p-4 p-md-5 text-white">
+                            <span class="badge bg-danger align-self-start mb-2 px-3 py-2 fw-bold">SIÊU PHẨM MỚI</span>
+                            <h2 class="display-6 fw-bold mb-2">iPhone 16 Pro Max</h2>
+                            <p class="text-white-50 mb-4" style="max-width: 450px;">Khung Titan sa mạc đẳng cấp, vi xử lý A18 Pro mạnh mẽ, camera zoom quang học 5x sắc nét.</p>
+                            <div>
+                                <a asp-controller="Products" asp-action="Index" class="btn btn-warning fw-bold px-4 py-2 shadow-sm">
+                                    <i class="bi bi-cart-fill me-1"></i> Mua Ngay Giá Tốt
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item" style="min-height: 330px; background: linear-gradient(135deg, #b50014, #d70018);">
+                        <div class="d-flex flex-column justify-content-center h-100 p-4 p-md-5 text-white">
+                            <span class="badge bg-warning text-dark align-self-start mb-2 px-3 py-2 fw-bold">TUẦN LỄ LAPTOP</span>
+                            <h2 class="display-6 fw-bold mb-2">MacBook Air M2 & Dell XPS</h2>
+                            <p class="text-white-50 mb-4" style="max-width: 450px;">Ưu đãi giảm sốc đến 3.000.000đ cho học sinh, sinh viên. Trả góp 0% lãi suất xét duyệt nhanh.</p>
+                            <div>
+                                <a asp-controller="Products" asp-action="Index" asp-route-categoryId="1" class="btn btn-light fw-bold px-4 py-2 text-danger shadow-sm">
+                                    <i class="bi bi-laptop me-1"></i> Khám Phá Laptop
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item" style="min-height: 330px; background: linear-gradient(135deg, #0d6efd, #052c65);">
+                        <div class="d-flex flex-column justify-content-center h-100 p-4 p-md-5 text-white">
+                            <span class="badge bg-danger align-self-start mb-2 px-3 py-2 fw-bold">ÂM THANH ĐỈNH CAO</span>
+                            <h2 class="display-6 fw-bold mb-2">Sony & Marshall Giảm Đến 30%</h2>
+                            <p class="text-white-50 mb-4" style="max-width: 450px;">Đắm chìm trong không gian âm nhạc chuẩn phòng thu với tai nghe chống ồn và loa Bluetooth Hi-Res.</p>
+                            <div>
+                                <a asp-controller="Products" asp-action="Index" asp-route-categoryId="4" class="btn btn-warning fw-bold px-4 py-2 shadow-sm">
+                                    <i class="bi bi-headphones me-1"></i> Xem Ưu Đãi
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Side Promo Cards -->
+        <div class="col-12 col-lg-4 d-flex flex-column gap-3">
+            <div class="bg-white rounded-4 p-3 shadow-sm border border-light flex-grow-1 d-flex flex-column justify-content-center">
+                <span class="badge bg-danger-subtle text-danger fw-bold small mb-1 align-self-start">ƯU ĐÃI ĐỘC QUYỀN</span>
+                <h6 class="fw-bold m-0 text-dark">Thu Cũ Đổi Mới Lên Đời</h6>
+                <p class="text-muted small m-0 mb-2">Trợ giá lên đến 2 triệu đồng khi nâng cấp Smartphone.</p>
+                <a asp-controller="Products" asp-action="Index" asp-route-categoryId="2" class="text-danger fw-semibold small text-decoration-none">Tìm hiểu ngay &rarr;</a>
+            </div>
+            <div class="bg-white rounded-4 p-3 shadow-sm border border-light flex-grow-1 d-flex flex-column justify-content-center">
+                <span class="badge bg-warning-subtle text-warning-emphasis fw-bold small mb-1 align-self-start">PHỤ KIỆN HOT</span>
+                <h6 class="fw-bold m-0 text-dark">Bàn phím cơ & Chuột Gaming</h6>
+                <p class="text-muted small m-0 mb-2">Giảm thêm 10% khi mua kèm Laptop hoặc PC.</p>
+                <a asp-controller="Products" asp-action="Index" asp-route-categoryId="3" class="text-danger fw-semibold small text-decoration-none">Xem phụ kiện &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         2. CATEGORY QUICK ICONS (Danh mục trực quan)
+         ========================================== -->
+    <div class="mb-4">
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-2 g-md-3">
+            @foreach (var cat in Model.Categories)
+            {
+                string iconClass = cat.Id switch
+                {
+                    1 => "bi-laptop",
+                    2 => "bi-phone",
+                    3 => "bi-keyboard",
+                    4 => "bi-headphones",
+                    5 => "bi-smartwatch",
+                    _ => "bi-device-ssd"
+                };
+
+                <div class="col">
+                    <a asp-controller="Products" asp-action="Index" asp-route-categoryId="@cat.Id" class="cat-quick-card">
+                        <div class="cat-icon-circle">
+                            <i class="bi @iconClass"></i>
+                        </div>
+                        <h6 class="cat-quick-title">@cat.Name</h6>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- ==========================================
+         3. FLASH SALE SECTION (Giá Sốc - Đồng hồ đếm ngược)
+         ========================================== -->
+    @if (Model.FlashSaleProducts.Any())
+    {
+        <div class="flash-sale-box">
+            <div class="flash-sale-header">
+                <div class="flash-sale-title">
+                    <i class="bi bi-fire text-warning fs-3"></i>
+                    <span>HOT SALE GIÁ SỐC</span>
+                </div>
+                <div class="countdown-box">
+                    <span class="text-white-50 small me-1">Kết thúc sau:</span>
+                    <span class="badge-timer">02</span> :
+                    <span class="badge-timer">45</span> :
+                    <span class="badge-timer">18</span>
+                </div>
+            </div>
+
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+                @foreach (var prod in Model.FlashSaleProducts)
+                {
+                    <div class="col">
+                        <div class="product-card">
+                            <span class="badge-discount">-15%</span>
+                            <span class="badge-installment">Trả góp 0%</span>
+                            
+                            <a asp-controller="Products" asp-action="Details" asp-route-id="@prod.Id" class="product-image-box">
+                                <img src="@prod.ImageUrl" alt="@prod.Name" loading="lazy"
+                                     onerror="this.src='https://placehold.co/400x300?text=No+Image'" />
+                            </a>
+
+                            <div class="product-info">
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@prod.Id" class="product-title" title="@prod.Name">
+                                    @prod.Name
+                                </a>
+
+                                <div class="product-price-box">
+                                    <div class="d-flex align-items-baseline">
+                                        <span class="product-price">@string.Format("{0:N0} đ", prod.Price)</span>
+                                    </div>
+                                    <div class="product-original-price">
+                                        @string.Format("{0:N0} đ", prod.Price * 1.15m)
+                                    </div>
+                                </div>
+
+                                <div class="product-promo-box">
+                                    <i class="bi bi-gift-fill text-danger me-1"></i> Tặng kèm túi chống sốc / Củ sạc nhanh
+                                </div>
+
+                                <div class="product-rating">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <span class="review-count">(45)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- ==========================================
+         4. SẢN PHẨM THEO TỪNG DANH MỤC
+         ========================================== -->
+    @foreach (var group in Model.CategorizedProducts)
+    {
+        var categoryName = group.Key;
+        var products = group.Value;
+        var firstProd = products.FirstOrDefault();
+        var categoryId = firstProd?.CategoryId;
+
+        <div class="mb-5">
+            <!-- Section Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-danger border-2">
+                <h4 class="fw-bold m-0 text-dark d-flex align-items-center gap-2">
+                    <span class="badge bg-danger rounded-circle p-2">
+                        <i class="bi bi-tag-fill fs-6"></i>
+                    </span>
+                    @categoryName
+                </h4>
+                <a asp-controller="Products" asp-action="Index" asp-route-categoryId="@categoryId" 
+                   class="text-danger fw-bold text-decoration-none small d-flex align-items-center gap-1">
+                    Xem tất cả @categoryName <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                @foreach (var prod in products)
+                {
+                    <div class="col">
+                        <div class="product-card">
+                            <span class="badge-discount">-10%</span>
+                            <span class="badge-installment">Trả góp 0%</span>
+                            
+                            <a asp-controller="Products" asp-action="Details" asp-route-id="@prod.Id" class="product-image-box">
+                                <img src="@prod.ImageUrl" alt="@prod.Name" loading="lazy"
+                                     onerror="this.src='https://placehold.co/400x300?text=No+Image'" />
+                            </a>
+
+                            <div class="product-info">
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@prod.Id" class="product-title" title="@prod.Name">
+                                    @prod.Name
+                                </a>
+
+                                <div class="product-price-box">
+                                    <div class="d-flex align-items-baseline">
+                                        <span class="product-price">@string.Format("{0:N0} đ", prod.Price)</span>
+                                        <span class="product-original-price">@string.Format("{0:N0} đ", prod.Price * 1.1m)</span>
+                                    </div>
+                                </div>
+
+                                <div class="product-promo-box">
+                                    <i class="bi bi-shield-check text-success me-1"></i> Bảo hành chính hãng 12 tháng
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <div class="product-rating">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-half"></i>
+                                        <span class="review-count">(32)</span>
+                                    </div>
+                                    <span class="badge bg-light text-muted border" style="font-size: 0.7rem;">Còn: @prod.Stock</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

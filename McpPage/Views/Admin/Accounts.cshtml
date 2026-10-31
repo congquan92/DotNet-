@@ -1,0 +1,105 @@
+@model IEnumerable<McpPage.Data.Entities.ApplicationUser>
+@{
+    ViewData["Title"] = "Quản Lý Tài Khoản - MCP Shop Admin";
+    var userRoles = ViewBag.UserRoles as Dictionary<string, IList<string>> ?? new();
+    var userLockouts = ViewBag.UserLockoutStatus as Dictionary<string, bool> ?? new();
+}
+
+<div>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold m-0 text-dark">👥 Quản Lý Tài Khoản & Quyền Hạn</h3>
+            <p class="text-muted small m-0 mt-1">Danh sách tài khoản hệ thống quản lý qua ASP.NET Core Identity</p>
+        </div>
+    </div>
+
+    <!-- Accounts Table -->
+    <div class="bg-white rounded-4 p-3 shadow-sm border border-light">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle small m-0">
+                <thead class="table-light text-uppercase">
+                    <tr>
+                        <th>Tên đăng nhập</th>
+                        <th>Họ và tên</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Vai trò (Roles)</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center" style="width: 170px;">Thao tác khóa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        var roles = userRoles.ContainsKey(user.Id) ? userRoles[user.Id] : new List<string>();
+                        var isLocked = userLockouts.ContainsKey(user.Id) && userLockouts[user.Id];
+                        var isSelf = user.UserName == User.Identity?.Name;
+
+                        <tr>
+                            <td>
+                                <strong class="text-danger">@@@user.UserName</strong>
+                                @if (isSelf)
+                                {
+                                    <span class="badge bg-secondary-subtle text-secondary ms-1" style="font-size: 0.68rem;">Bạn</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">@(user.FullName ?? "---")</div>
+                            </td>
+                            <td>@user.Email</td>
+                            <td>@(user.PhoneNumber ?? "---")</td>
+                            <td>
+                                @foreach (var role in roles)
+                                {
+                                    <span class="badge @(role == "Admin" ? "bg-danger" : (role == "Manager" ? "bg-warning text-dark" : (role == "Staff" ? "bg-info text-dark" : "bg-primary"))) me-1">
+                                        @role
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (isLocked)
+                                {
+                                    <span class="badge bg-danger-subtle text-danger">
+                                        <i class="bi bi-lock-fill me-1"></i> Bị khóa
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success-subtle text-success">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Hoạt động
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (isSelf)
+                                {
+                                    <span class="text-muted small fst-italic">Đang đăng nhập</span>
+                                }
+                                else
+                                {
+                                    <form method="post" asp-controller="Admin" asp-action="ToggleUserLock" class="d-inline">
+                                        <input type="hidden" name="id" value="@user.Id" />
+                                        @if (isLocked)
+                                        {
+                                            <button type="submit" class="btn btn-outline-success btn-sm px-2 py-1 fw-semibold" title="Mở khóa">
+                                                <i class="bi bi-unlock-fill me-1"></i> Mở khóa
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="btn btn-outline-danger btn-sm px-2 py-1 fw-semibold" 
+                                                    title="Khóa tài khoản" onclick="return confirm('Bạn có chắc chắn muốn khóa tài khoản @user.UserName? Tài khoản này sẽ không thể đăng nhập.');">
+                                                <i class="bi bi-lock-fill me-1"></i> Khóa tài khoản
+                                            </button>
+                                        }
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

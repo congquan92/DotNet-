@@ -1,0 +1,468 @@
+:root {
+  --cps-red: #d70018;
+  --cps-red-dark: #b50014;
+  --cps-red-light: #fff0f1;
+  --cps-accent: #ff5722;
+  --cps-bg: #f4f6f8;
+  --cps-text-main: #1f2937;
+  --cps-text-muted: #6b7280;
+  --cps-border: #e5e7eb;
+}
+
+body {
+  background-color: var(--cps-bg);
+  color: var(--cps-text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==========================================================================
+   HEADER & NAVBAR (Phong cách CellphoneS Đỏ - Trắng)
+   ========================================================================== */
+.header-cps {
+  background-color: var(--cps-red);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.header-cps a {
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Fix Dropdown Menu trong Header */
+.header-cps .dropdown-menu {
+  background: #ffffff !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 12px !important;
+  min-width: 220px !important;
+  padding: 8px 0 !important;
+  border: 1px solid #f0f0f0 !important;
+}
+
+.header-cps .dropdown-menu a,
+.header-cps .dropdown-menu button,
+.header-cps .dropdown-menu .dropdown-item {
+  color: #1f2937 !important;
+  font-size: 0.9rem !important;
+  padding: 9px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: transparent !important;
+  border: none !important;
+  width: 100% !important;
+  text-align: left !important;
+  transition: all 0.2s ease !important;
+}
+
+.header-cps .dropdown-menu a:hover,
+.header-cps .dropdown-menu button:hover,
+.header-cps .dropdown-menu .dropdown-item:hover {
+  background-color: #fff0f1 !important;
+  color: #d70018 !important;
+}
+
+.header-cps .dropdown-menu .dropdown-header {
+  color: #6b7280 !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  padding: 8px 16px !important;
+}
+
+.header-cps .dropdown-menu hr {
+  margin: 6px 0 !important;
+  border-color: #f0f0f0 !important;
+}
+
+.brand-logo {
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #fff !important;
+}
+
+.brand-logo .logo-tag {
+  background-color: #fff;
+  color: var(--cps-red);
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+  font-weight: 700;
+}
+
+.header-search-form {
+  position: relative;
+  width: 100%;
+}
+
+.header-search-input {
+  border-radius: 24px;
+  border: none;
+  padding: 8px 45px 8px 18px;
+  font-size: 0.92rem;
+  width: 100%;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header-search-btn {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--cps-red);
+  padding: 6px 12px;
+  font-size: 1.1rem;
+}
+
+.header-action-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.header-action-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+.cart-badge {
+  background-color: #ffeb3b;
+  color: #d70018;
+  font-weight: 800;
+  border-radius: 50%;
+  padding: 2px 7px;
+  font-size: 0.75rem;
+  margin-left: 4px;
+}
+
+/* Secondary Sub-nav */
+.header-subnav {
+  background-color: #fff;
+  border-bottom: 1px solid var(--cps-border);
+}
+
+.subnav-link {
+  color: var(--cps-text-main);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.subnav-link:hover, .subnav-link.active {
+  color: var(--cps-red);
+}
+
+/* ==========================================================================
+   CARDS & PRODUCTS
+   ========================================================================== */
+.product-card {
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  border-color: #ffd2d6;
+}
+
+.product-image-box {
+  height: 200px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  position: relative;
+}
+
+.product-image-box img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image-box img {
+  transform: scale(1.05);
+}
+
+.badge-discount {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: var(--cps-red);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  z-index: 2;
+}
+
+.badge-installment {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 6px;
+  z-index: 2;
+}
+
+.product-info {
+  padding: 12px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+  height: 2.7rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: var(--cps-text-main);
+  text-decoration: none;
+  margin-bottom: 6px;
+}
+
+.product-title:hover {
+  color: var(--cps-red);
+}
+
+.product-price-box {
+  margin-top: auto;
+}
+
+.product-price {
+  color: var(--cps-red);
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+
+.product-original-price {
+  color: var(--cps-text-muted);
+  font-size: 0.82rem;
+  text-decoration: line-through;
+  margin-left: 6px;
+}
+
+.product-rating {
+  font-size: 0.8rem;
+  color: #f59e0b;
+  margin-top: 4px;
+}
+
+.product-rating .review-count {
+  color: var(--cps-text-muted);
+  margin-left: 4px;
+}
+
+.product-promo-box {
+  background: var(--cps-red-light);
+  border: 1px dashed #ffd2d6;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 0.78rem;
+  color: var(--cps-red-dark);
+  margin-top: 8px;
+  line-height: 1.25;
+}
+
+/* ==========================================================================
+   FLASH SALE SECTION (Đỏ rực rỡ phong cách CellphoneS)
+   ========================================================================== */
+.flash-sale-box {
+  background: linear-gradient(135deg, #d70018 0%, #ff4d4d 100%);
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 20px rgba(215, 0, 24, 0.2);
+}
+
+.flash-sale-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.flash-sale-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.countdown-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.countdown-box .badge-timer {
+  background: #111;
+  color: #fff;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   CATEGORY QUICK ICONS
+   ========================================================================== */
+.cat-quick-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 10px;
+  text-align: center;
+  border: 1px solid var(--cps-border);
+  transition: all 0.2s ease;
+  display: block;
+  text-decoration: none;
+  color: var(--cps-text-main);
+  height: 100%;
+}
+
+.cat-quick-card:hover {
+  border-color: var(--cps-red);
+  color: var(--cps-red);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(215, 0, 24, 0.12);
+}
+
+.cat-icon-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--cps-red-light);
+  color: var(--cps-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 10px;
+}
+
+.cat-quick-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ==========================================================================
+   BUTTONS & FORMS
+   ========================================================================== */
+.btn-cps-red {
+  background-color: var(--cps-red);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-cps-red:hover {
+  background-color: var(--cps-red-dark);
+  color: #fff;
+}
+
+.btn-cps-outline {
+  border: 1.5px solid var(--cps-red);
+  color: var(--cps-red);
+  font-weight: 600;
+  border-radius: 10px;
+  background: #fff;
+  transition: all 0.2s;
+}
+
+.btn-cps-outline:hover {
+  background: var(--cps-red);
+  color: #fff;
+}
+
+/* ==========================================================================
+   FOOTER (Chân trang chuyên nghiệp)
+   ========================================================================== */
+.footer-cps {
+  background-color: #ffffff;
+  border-top: 1px solid var(--cps-border);
+  margin-top: 50px;
+  padding: 40px 0 20px;
+  font-size: 0.88rem;
+}
+
+.footer-heading {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 14px;
+  color: #111;
+  text-transform: uppercase;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 8px;
+}
+
+.footer-links a {
+  color: var(--cps-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: var(--cps-red);
+}
+
+.hotline-highlight {
+  color: var(--cps-red);
+  font-weight: 800;
+  font-size: 1.05rem;
+}

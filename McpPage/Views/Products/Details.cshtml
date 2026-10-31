@@ -1,0 +1,181 @@
+@model McpPage.Data.Entities.Product
+@{
+    ViewData["Title"] = $"{Model.Name} - MCP Shop";
+    var relatedProducts = ViewBag.RelatedProducts as List<McpPage.Data.Entities.Product> ?? new();
+}
+
+<div class="container my-3">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-danger text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Products" asp-action="Index" class="text-danger text-decoration-none">Sản phẩm</a></li>
+            @if (Model.Category != null)
+            {
+                <li class="breadcrumb-item">
+                    <a asp-controller="Products" asp-action="Index" asp-route-categoryId="@Model.CategoryId" class="text-danger text-decoration-none">
+                        @Model.Category.Name
+                    </a>
+                </li>
+            }
+            <li class="breadcrumb-item active text-truncate" style="max-width: 300px;" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <!-- Product Showcase -->
+    <div class="bg-white rounded-4 p-4 shadow-sm border border-light mb-4">
+        <div class="row g-4">
+            <!-- Left: Product Image -->
+            <div class="col-12 col-md-5 d-flex flex-column align-items-center justify-content-center p-3 border-end">
+                <div class="position-relative w-100 text-center p-3" style="max-height: 420px;">
+                    <span class="badge-discount">-12%</span>
+                    <span class="badge-installment">Trả góp 0%</span>
+                    <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded-3" 
+                         style="max-height: 380px; object-fit: contain;" 
+                         onerror="this.src='https://placehold.co/500x500?text=No+Image'" />
+                </div>
+                <div class="d-flex gap-2 mt-3 text-muted small">
+                    <span><i class="bi bi-shield-check text-success me-1"></i> Chính hãng 100%</span>
+                    <span>•</span>
+                    <span><i class="bi bi-arrow-repeat text-primary me-1"></i> 1 đổi 1 30 ngày</span>
+                    <span>•</span>
+                    <span><i class="bi bi-truck text-danger me-1"></i> Miễn phí giao hàng</span>
+                </div>
+            </div>
+
+            <!-- Right: Product Info & Purchase Form -->
+            <div class="col-12 col-md-7 ps-md-4">
+                <span class="badge bg-danger-subtle text-danger fw-bold mb-2">@(Model.Category?.Name ?? "Công nghệ")</span>
+                <h3 class="fw-bold mb-2 text-dark">@Model.Name</h3>
+
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="product-rating">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1">5.0</span>
+                        <span class="review-count">(128 đánh giá)</span>
+                    </div>
+                    <span class="text-muted">|</span>
+                    <span class="badge @(Model.Stock > 0 ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger") px-2 py-1">
+                        @(Model.Stock > 0 ? $"Còn hàng ({Model.Stock} sản phẩm)" : "Hết hàng")
+                    </span>
+                </div>
+
+                <!-- Price Box -->
+                <div class="bg-light rounded-3 p-3 mb-3 border">
+                    <div class="d-flex align-items-baseline gap-3">
+                        <span class="fs-2 fw-bold text-danger">@string.Format("{0:N0} đ", Model.Price)</span>
+                        <span class="text-muted text-decoration-line-through fs-6">@string.Format("{0:N0} đ", Model.Price * 1.12m)</span>
+                        <span class="badge bg-danger">Tiết kiệm @string.Format("{0:N0} đ", Model.Price * 0.12m)</span>
+                    </div>
+                    <div class="small text-danger fw-semibold mt-1">
+                        <i class="bi bi-gem me-1"></i> Giá ưu đãi đặc quyền cho thành viên Smember: giảm thêm 200.000đ
+                    </div>
+                </div>
+
+                <!-- Promotion Box -->
+                <div class="border border-danger-subtle rounded-3 p-3 mb-4 bg-danger-subtle bg-opacity-10">
+                    <h6 class="fw-bold text-danger mb-2"><i class="bi bi-gift-fill me-1"></i> Khuyến mãi đặc biệt</h6>
+                    <ul class="small mb-0 ps-3 text-secondary">
+                        <li>Tặng củ sạc nhanh GaN 65W hoặc túi chống sốc cao cấp.</li>
+                        <li>Trợ giá thu cũ đổi mới lên đến 2.000.000đ.</li>
+                        <li>Giảm 10% khi mua kèm phụ kiện (tai nghe, chuột, sạc dự phòng).</li>
+                    </ul>
+                </div>
+
+                <!-- Purchase Form (Form POST truyền thống chuẩn giáo trình MVC) -->
+                <form method="post" asp-controller="Cart" asp-action="AddToCart">
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <label class="fw-semibold small">Số lượng:</label>
+                        <input type="number" name="quantity" value="1" min="1" max="@Model.Stock" 
+                               class="form-control text-center" style="width: 85px;" />
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" name="actionType" value="buyNow" class="btn btn-cps-red btn-lg flex-grow-1 fw-bold shadow-sm">
+                            <i class="bi bi-lightning-charge-fill me-1"></i> MUA NGAY
+                            <div class="small fw-normal" style="font-size: 0.75rem;">Giao tận nơi hoặc nhận tại cửa hàng</div>
+                        </button>
+                        <button type="submit" name="actionType" value="addOnly" class="btn btn-cps-outline btn-lg px-4 fw-bold">
+                            <i class="bi bi-cart-plus me-1"></i> Thêm vào giỏ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <hr class="my-4 text-muted" />
+
+        <!-- Product Specs & Description -->
+        <div class="row g-4">
+            <div class="col-12 col-lg-8">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Đặc điểm nổi bật</h5>
+                <div class="text-secondary leading-relaxed mb-4">
+                    <p>@Model.Description</p>
+                    <p>Sản phẩm chính hãng phân phối tại Việt Nam, nguyên seal 100% kèm đầy đủ phụ kiện từ nhà sản xuất. Hỗ trợ kích hoạt bảo hành điện tử chính hãng toàn quốc.</p>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Thông số kỹ thuật</h5>
+                <table class="table table-sm table-striped small border">
+                    <tbody>
+                        <tr>
+                            <th class="w-50 bg-light">Tên sản phẩm</th>
+                            <td>@Model.Name</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light">Danh mục</th>
+                            <td>@(Model.Category?.Name ?? "Chung")</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light">Bảo hành</th>
+                            <td>12 tháng chính hãng</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light">Tình trạng</th>
+                            <td>Mới 100% nguyên hộp</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light">Tồn kho</th>
+                            <td>@Model.Stock chiếc</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    @if (relatedProducts.Any())
+    {
+        <div class="mb-4">
+            <h4 class="fw-bold mb-3 text-dark">Sản phẩm tương tự bạn có thể thích</h4>
+            <div class="row row-cols-2 row-cols-md-4 g-3">
+                @foreach (var prod in relatedProducts)
+                {
+                    <div class="col">
+                        <div class="product-card">
+                            <a asp-controller="Products" asp-action="Details" asp-route-id="@prod.Id" class="product-image-box">
+                                <img src="@prod.ImageUrl" alt="@prod.Name" loading="lazy"
+                                     onerror="this.src='https://placehold.co/400x300?text=No+Image'" />
+                            </a>
+                            <div class="product-info">
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@prod.Id" class="product-title">
+                                    @prod.Name
+                                </a>
+                                <div class="product-price-box">
+                                    <span class="product-price">@string.Format("{0:N0} đ", prod.Price)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

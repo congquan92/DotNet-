@@ -1,0 +1,120 @@
+@model McpPage.Data.Entities.ApplicationUser
+@{
+    ViewData["Title"] = "Tài Khoản Của Tôi - MCP Shop";
+    var roles = ViewBag.UserRoles as IList<string> ?? new List<string>();
+    var customer = ViewBag.Customer as McpPage.Data.Entities.Customer;
+}
+
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-danger text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item active">Hồ sơ cá nhân</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Left: User Info Card -->
+        <div class="col-12 col-lg-4">
+            <div class="bg-white rounded-4 p-4 shadow-sm border border-light text-center mb-3">
+                <div class="cat-icon-circle" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <h5 class="fw-bold m-0 text-dark">@(Model.FullName ?? Model.UserName)</h5>
+                <p class="text-muted small m-0 mb-2">@@@Model.UserName</p>
+
+                <div class="d-flex justify-content-center gap-1 mb-3">
+                    @foreach (var r in roles)
+                    {
+                        <span class="badge @(r == "Admin" ? "bg-danger" : (r == "Manager" ? "bg-warning text-dark" : "bg-primary"))">
+                            @r
+                        </span>
+                    }
+                </div>
+
+                <hr class="text-muted" />
+
+                <div class="text-start small">
+                    <div class="mb-2">
+                        <span class="text-muted d-block">Email:</span>
+                        <strong class="text-dark">@Model.Email</strong>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-muted d-block">Số điện thoại:</span>
+                        <strong class="text-dark">@(Model.PhoneNumber ?? customer?.Phone ?? "Chưa cập nhật")</strong>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-muted d-block">Địa chỉ nhận hàng:</span>
+                        <strong class="text-dark">@(customer?.Address ?? "Chưa có địa chỉ")</strong>
+                    </div>
+                </div>
+
+                <form method="post" asp-controller="Account" asp-action="Logout" class="m-0">
+                    <button type="submit" class="btn btn-outline-danger w-100 btn-sm">
+                        <i class="bi bi-box-arrow-right me-1"></i> Đăng Xuất
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right: Order History -->
+        <div class="col-12 col-lg-8">
+            <div class="bg-white rounded-4 p-4 shadow-sm border border-light">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-bag-check-fill text-danger"></i> Lịch Sử Đơn Hàng
+                </h5>
+
+                @if (customer?.Orders == null || !customer.Orders.Any())
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        <p class="small m-0">Bạn chưa có đơn hàng nào.</p>
+                        <a asp-controller="Products" asp-action="Index" class="btn btn-cps-red btn-sm mt-3 px-3">
+                            Mua sắm ngay
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var order in customer.Orders.OrderByDescending(o => o.OrderDate))
+                        {
+                            <div class="border rounded-3 p-3 bg-light">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                    <div>
+                                        <span class="fw-bold text-danger me-2">#Đơn hàng: @order.Id</span>
+                                        <span class="text-muted small">@order.OrderDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
+                                    </div>
+                                    <span class="badge @(order.Status == "Completed" ? "bg-success" : (order.Status == "Processing" ? "bg-warning text-dark" : "bg-secondary"))">
+                                        @order.Status
+                                    </span>
+                                </div>
+
+                                <div class="mb-2">
+                                    @foreach (var item in order.OrderDetails)
+                                    {
+                                        <div class="d-flex justify-content-between align-items-center small py-1">
+                                            <span>
+                                                @(item.Product?.Name ?? $"Sản phẩm #{item.ProductId}") 
+                                                <span class="text-muted">x @item.Quantity</span>
+                                            </span>
+                                            <span class="fw-semibold">@string.Format("{0:N0} đ", item.UnitPrice * item.Quantity)</span>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top small">
+                                    <span class="text-muted">Giao đến: @order.ShippingAddress</span>
+                                    <div>
+                                        Tổng tiền: <strong class="text-danger fs-6">@string.Format("{0:N0} đ", order.TotalAmount)</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

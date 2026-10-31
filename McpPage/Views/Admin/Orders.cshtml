@@ -1,0 +1,121 @@
+@model IEnumerable<McpPage.Data.Entities.Order>
+@{
+    ViewData["Title"] = "Quản Lý Đơn Hàng - MCP Shop Admin";
+    var currentStatus = ViewBag.Status as string ?? "All";
+}
+
+<div>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold m-0 text-dark">📦 Quản Lý Đơn Hàng Trực Tuyến</h3>
+            <p class="text-muted small m-0 mt-1">Theo dõi, duyệt và cập nhật trạng thái đơn hàng của khách</p>
+        </div>
+    </div>
+
+    <!-- Status Filter Buttons -->
+    <div class="bg-white rounded-4 p-3 shadow-sm border border-light mb-3">
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-controller="Admin" asp-action="Orders" asp-route-status="All" 
+               class="btn btn-sm @(currentStatus == "All" ? "btn-dark fw-bold" : "btn-outline-secondary")">
+               Tất cả (@Model.Count())
+            </a>
+            <a asp-controller="Admin" asp-action="Orders" asp-route-status="Pending" 
+               class="btn btn-sm @(currentStatus == "Pending" ? "btn-warning fw-bold text-dark" : "btn-outline-warning text-dark")">
+               Chờ xác nhận (Pending)
+            </a>
+            <a asp-controller="Admin" asp-action="Orders" asp-route-status="Processing" 
+               class="btn btn-sm @(currentStatus == "Processing" ? "btn-primary fw-bold" : "btn-outline-primary")">
+               Đang giao (Processing)
+            </a>
+            <a asp-controller="Admin" asp-action="Orders" asp-route-status="Completed" 
+               class="btn btn-sm @(currentStatus == "Completed" ? "btn-success fw-bold" : "btn-outline-success")">
+               Hoàn thành (Completed)
+            </a>
+            <a asp-controller="Admin" asp-action="Orders" asp-route-status="Cancelled" 
+               class="btn btn-sm @(currentStatus == "Cancelled" ? "btn-danger fw-bold" : "btn-outline-danger")">
+               Đã hủy (Cancelled)
+            </a>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-white rounded-4 p-3 shadow-sm border border-light">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                <p class="m-0">Không có đơn hàng nào thuộc trạng thái này.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle small m-0">
+                    <thead class="table-light text-uppercase">
+                        <tr>
+                            <th>#Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Địa chỉ nhận</th>
+                            <th>Chi tiết mua</th>
+                            <th class="text-end">Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Cập nhật trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold text-danger">#@order.Id</td>
+                                <td>
+                                    <div class="fw-bold text-dark">@(order.Customer?.FullName ?? "Khách vãng lai")</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">SĐT: @(order.Customer?.Phone ?? "---")</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">Ngày: @order.OrderDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
+                                </td>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 220px;" title="@order.ShippingAddress">
+                                        @order.ShippingAddress
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="max-height: 80px; overflow-y: auto;">
+                                        @foreach (var d in order.OrderDetails)
+                                        {
+                                            <div style="font-size: 0.75rem;">
+                                                • @(d.Product?.Name ?? $"SP #{d.ProductId}") <span class="text-muted">(x@(d.Quantity))</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="text-end fw-bold text-danger fs-6">
+                                    @string.Format("{0:N0} đ", order.TotalAmount)
+                                </td>
+                                <td>
+                                    <span class="badge @(order.Status == "Completed" ? "bg-success" : (order.Status == "Processing" ? "bg-primary" : (order.Status == "Pending" ? "bg-warning text-dark" : "bg-danger")))">
+                                        @order.Status
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <!-- Form Cập nhật trạng thái nhanh -->
+                                    <form method="post" asp-controller="Admin" asp-action="UpdateOrderStatus" class="d-flex align-items-center justify-content-center gap-1">
+                                        <input type="hidden" name="id" value="@order.Id" />
+                                        <select name="newStatus" class="form-select form-select-sm" style="width: 130px;">
+                                            <option value="Pending" selected="@(order.Status == "Pending")">Pending</option>
+                                            <option value="Processing" selected="@(order.Status == "Processing")">Processing</option>
+                                            <option value="Completed" selected="@(order.Status == "Completed")">Completed</option>
+                                            <option value="Cancelled" selected="@(order.Status == "Cancelled")">Cancelled</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Lưu">
+                                            <i class="bi bi-check2"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

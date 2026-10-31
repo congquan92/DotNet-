@@ -1,0 +1,95 @@
+@model McpPage.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Đăng Nhập - MCP Shop";
+}
+
+<div class="container py-4 my-3">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-7 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <!-- Header Card -->
+                <div class="bg-danger text-white p-4 text-center" style="background: linear-gradient(135deg, #d70018, #b50014) !important;">
+                    <div class="display-6 mb-1">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+                    <h4 class="fw-bold m-0">Đăng Nhập MCP Shop</h4>
+                    <p class="small text-white-50 m-0 mt-1">Xác thực bảo mật ASP.NET Core Identity</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form method="post" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Username" class="form-label small fw-semibold"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                                <input asp-for="Username" id="loginUsername" class="form-control" placeholder="Nhập tên đăng nhập..." autofocus />
+                            </div>
+                            <span asp-validation-for="Username" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label small fw-semibold"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-key"></i></span>
+                                <input asp-for="Password" id="loginPassword" class="form-control" placeholder="Nhập mật khẩu..." />
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label small text-muted"></label>
+                            </div>
+                            <a href="#" class="small text-danger text-decoration-none">Quên mật khẩu?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-cps-red w-100 py-2 fw-bold shadow-sm mb-3">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Đăng Nhập
+                        </button>
+
+                        <div class="text-center small text-muted">
+                            Chưa có tài khoản? 
+                            <a asp-controller="Account" asp-action="Register" class="text-danger fw-semibold text-decoration-none">
+                                Đăng ký ngay
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Quick Login Demo Buttons (Tiện ích kiểm thử cho giảng viên và người dùng) -->
+                    <div class="border-top pt-3 mt-4 text-center">
+                        <span class="badge bg-danger-subtle text-danger mb-2 small fw-semibold">
+                            <i class="bi bi-lightning-fill"></i> Đăng nhập nhanh để test:
+                        </span>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm text-start" onclick="fillLogin('admin', 'Admin@123')">
+                                <i class="bi bi-person-gear me-1"></i> <strong>Admin</strong> (admin / Admin@123)
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm text-start" onclick="fillLogin('manager', 'Manager@123')">
+                                <i class="bi bi-person-workspace me-1"></i> <strong>Manager</strong> (manager / Manager@123)
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm text-start" onclick="fillLogin('staff', 'Staff@123')">
+                                <i class="bi bi-person-badge me-1"></i> <strong>Staff</strong> (staff / Staff@123)
+                            </button>
+                            <button type="button" class="btn btn-outline-primary btn-sm text-start" onclick="fillLogin('user1', 'User@123')">
+                                <i class="bi bi-person me-1"></i> <strong>Khách hàng</strong> (user1 / User@123)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function fillLogin(user, pass) {
+            document.getElementById('loginUsername').value = user;
+            document.getElementById('loginPassword').value = pass;
+        }
+    </script>
+}

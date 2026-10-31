@@ -1,0 +1,183 @@
+@model McpPage.Models.CheckoutViewModel
+@{
+    ViewData["Title"] = "Giỏ Hàng Của Bạn - MCP Shop";
+}
+
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-danger text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item active">Giỏ hàng</li>
+        </ol>
+    </nav>
+
+    <h4 class="fw-bold mb-3 text-dark d-flex align-items-center gap-2">
+        <i class="bi bi-cart3 text-danger"></i> Giỏ Hàng Của Bạn
+        @if (Model.Cart.Items.Any())
+        {
+            <span class="badge bg-danger-subtle text-danger fs-6 fw-semibold">(@Model.Cart.TotalItems sản phẩm)</span>
+        }
+    </h4>
+
+    @if (!Model.Cart.Items.Any())
+    {
+        <div class="bg-white rounded-4 p-5 text-center shadow-sm border border-light">
+            <i class="bi bi-cart-x text-muted" style="font-size: 4.5rem;"></i>
+            <h5 class="fw-bold mt-3 text-dark">Giỏ hàng của bạn đang trống</h5>
+            <p class="text-muted small">Hãy chọn thêm những sản phẩm công nghệ tuyệt vời bạn yêu thích nhé.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-cps-red px-4 py-2 mt-2">
+                <i class="bi bi-arrow-left me-1"></i> Tiếp tục mua sắm
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <!-- Left: Cart Items List -->
+            <div class="col-12 col-lg-8">
+                <div class="bg-white rounded-4 p-3 shadow-sm border border-light mb-3">
+                    <div class="table-responsive">
+                        <table class="table align-middle m-0">
+                            <thead class="table-light small text-uppercase text-muted">
+                                <tr>
+                                    <th style="width: 45%;">Sản phẩm</th>
+                                    <th class="text-center" style="width: 18%;">Đơn giá</th>
+                                    <th class="text-center" style="width: 18%;">Số lượng</th>
+                                    <th class="text-end" style="width: 19%;">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Cart.Items)
+                                {
+                                    <tr>
+                                        <!-- Product Info -->
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded border p-1" 
+                                                     style="width: 60px; height: 60px; object-fit: contain;" 
+                                                     onerror="this.src='https://placehold.co/100x100?text=No+Img'" />
+                                                <div>
+                                                    <a asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId" 
+                                                       class="fw-semibold text-dark text-decoration-none small d-block">
+                                                        @item.ProductName
+                                                    </a>
+                                                    <!-- Delete Form -->
+                                                    <form method="post" asp-controller="Cart" asp-action="RemoveFromCart" class="d-inline">
+                                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                                        <button type="submit" class="btn btn-link text-danger p-0 small text-decoration-none border-0" 
+                                                                onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">
+                                                            <i class="bi bi-trash3 me-1"></i>Xóa
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <!-- Unit Price -->
+                                        <td class="text-center">
+                                            <span class="fw-bold text-danger small">@string.Format("{0:N0} đ", item.Price)</span>
+                                        </td>
+
+                                        <!-- Quantity Form (Cập nhật bằng Form POST truyền thống) -->
+                                        <td class="text-center">
+                                            <form method="post" asp-controller="Cart" asp-action="UpdateQuantity" class="d-flex justify-content-center align-items-center gap-1">
+                                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                                <input type="number" name="quantity" value="@item.Quantity" min="1" max="99" 
+                                                       class="form-control form-control-sm text-center" style="width: 60px;" 
+                                                       onchange="this.form.submit();" />
+                                            </form>
+                                        </td>
+
+                                        <!-- Subtotal -->
+                                        <td class="text-end">
+                                            <strong class="text-danger">@string.Format("{0:N0} đ", item.SubTotal)</strong>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Xem thêm sản phẩm khác
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right: Order Summary & Checkout Form -->
+            <div class="col-12 col-lg-4">
+                <!-- Summary Card -->
+                <div class="bg-white rounded-4 p-4 shadow-sm border border-light mb-3">
+                    <h5 class="fw-bold mb-3 text-dark border-bottom pb-2">Tóm tắt đơn hàng</h5>
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Tổng số lượng:</span>
+                        <span class="fw-bold">@Model.Cart.TotalItems sản phẩm</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Tạm tính:</span>
+                        <span class="fw-bold">@string.Format("{0:N0} đ", Model.Cart.TotalAmount)</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 small">
+                        <span class="text-muted">Phí vận chuyển:</span>
+                        <span class="text-success fw-bold">MIỄN PHÍ</span>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between align-items-baseline mb-2">
+                        <span class="fw-bold">Tổng thanh toán:</span>
+                        <span class="fs-4 fw-bold text-danger">@string.Format("{0:N0} đ", Model.Cart.TotalAmount)</span>
+                    </div>
+                    <div class="small text-muted text-end">(Đã bao gồm thuế VAT)</div>
+                </div>
+
+                <!-- Checkout Customer Info Form (Form POST truyền thống) -->
+                <div class="bg-white rounded-4 p-4 shadow-sm border border-light">
+                    <h5 class="fw-bold mb-3 text-dark border-bottom pb-2">
+                        <i class="bi bi-person-lines-fill text-danger me-1"></i> Thông tin giao hàng
+                    </h5>
+
+                    <form method="post" asp-controller="Cart" asp-action="Checkout">
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label small fw-semibold"></label>
+                            <input asp-for="FullName" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label small fw-semibold"></label>
+                            <input asp-for="Phone" class="form-control" placeholder="Ví dụ: 0901234567" />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label small fw-semibold"></label>
+                            <input asp-for="Address" class="form-control" placeholder="Số nhà, tên đường, phường/xã, quận/huyện..." />
+                            <span asp-validation-for="Address" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label small fw-semibold">Email (nhận hóa đơn điện tử)</label>
+                            <input asp-for="Email" class="form-control" placeholder="email@example.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Note" class="form-label small fw-semibold"></label>
+                            <textarea asp-for="Note" class="form-control" rows="2" placeholder="Ghi chú giao hàng (giao giờ hành chính, gọi trước khi đến...)"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-cps-red w-100 py-3 fw-bold fs-6 shadow">
+                            <i class="bi bi-shield-lock-fill me-1"></i> XÁC NHẬN ĐẶT HÀNG
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

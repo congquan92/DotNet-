@@ -1,0 +1,86 @@
+@model McpPage.Data.Entities.Order
+@{
+    ViewData["Title"] = "Đặt Hàng Thành Công - MCP Shop";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-7">
+            <div class="bg-white rounded-4 p-4 p-md-5 text-center shadow-sm border border-light">
+                <div class="text-success mb-3" style="font-size: 4rem;">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <h3 class="fw-bold text-dark mb-2">ĐẶT HÀNG THÀNH CÔNG!</h3>
+                <p class="text-muted small mb-4">
+                    Cảm ơn bạn đã tin tưởng mua sắm tại <strong>MCP Shop</strong>. Mã đơn hàng của bạn là 
+                    <span class="badge bg-danger fs-6 px-3 py-1">#@Model.Id</span>
+                </p>
+
+                <!-- Customer Details Card -->
+                <div class="bg-light rounded-3 p-3 text-start small mb-4 border">
+                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-2">Thông tin người nhận</h6>
+                    <div class="row g-2">
+                        <div class="col-sm-4 text-muted">Người nhận:</div>
+                        <div class="col-sm-8 fw-semibold">@(Model.Customer?.FullName ?? "Khách hàng")</div>
+
+                        <div class="col-sm-4 text-muted">Số điện thoại:</div>
+                        <div class="col-sm-8 fw-semibold">@(Model.Customer?.Phone ?? "---")</div>
+
+                        <div class="col-sm-4 text-muted">Địa chỉ nhận hàng:</div>
+                        <div class="col-sm-8 fw-semibold">@Model.ShippingAddress</div>
+
+                        <div class="col-sm-4 text-muted">Thời gian đặt:</div>
+                        <div class="col-sm-8">@Model.OrderDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
+
+                        <div class="col-sm-4 text-muted">Trạng thái:</div>
+                        <div class="col-sm-8">
+                            <span class="badge bg-warning text-dark">@Model.Status</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items Summary Table -->
+                <div class="table-responsive text-start mb-4">
+                    <table class="table table-sm align-middle">
+                        <thead class="table-light small">
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th class="text-center">Số lượng</th>
+                                <th class="text-end">Đơn giá</th>
+                                <th class="text-end">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody class="small">
+                            @foreach (var detail in Model.OrderDetails)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">@(detail.Product?.Name ?? $"Sản phẩm #{detail.ProductId}")</div>
+                                    </td>
+                                    <td class="text-center">@detail.Quantity</td>
+                                    <td class="text-end">@string.Format("{0:N0} đ", detail.UnitPrice)</td>
+                                    <td class="text-end fw-bold text-danger">@string.Format("{0:N0} đ", detail.Quantity * detail.UnitPrice)</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="3" class="text-end">Tổng tiền thanh toán:</th>
+                                <th class="text-end text-danger fs-5">@string.Format("{0:N0} đ", Model.TotalAmount)</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-cps-red px-4 py-2">
+                        <i class="bi bi-house-door-fill me-1"></i> Về trang chủ
+                    </a>
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary px-4 py-2">
+                        <i class="bi bi-grid-fill me-1"></i> Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
