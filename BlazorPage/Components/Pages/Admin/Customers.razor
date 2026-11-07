@@ -46,10 +46,10 @@
                                 @c.Address
                             </td>
                             <td>
-                                @if (c.Account != null)
+                                @if (c.User != null)
                                 {
                                     <span class="badge bg-primary-subtle text-primary">
-                                        👤 @c.Account.Username (@c.Account.Role)
+                                        👤 @c.User.UserName
                                     </span>
                                 }
                                 else
@@ -77,7 +77,7 @@
     {
         await using var context = await DbFactory.CreateDbContextAsync();
         customers = await context.Customers
-            .Include(c => c.Account)
+            .Include(c => c.User)
             .Include(c => c.Orders)
             .OrderByDescending(c => c.Id)
             .ToListAsync();

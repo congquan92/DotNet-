@@ -2,41 +2,43 @@
 @inject NavigationManager Navigation
 @inject AuthService Auth
 
-<div class="page d-flex flex-column min-vh-100">
-    <div class="d-flex flex-grow-1">
-        <!-- Sidebar Admin -->
-        <div class="sidebar bg-dark text-white" style="width: 260px; min-height: 100vh;">
-            <AdminNavMenu />
-        </div>
+<div class="d-flex min-vh-100">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar d-flex flex-column">
+        <AdminNavMenu />
 
-        <!-- Main Content -->
-        <main class="flex-grow-1 bg-light d-flex flex-column">
-            <!-- Topbar Admin -->
-            <header class="bg-white border-bottom px-4 py-2 d-flex justify-content-between align-items-center shadow-sm">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="badge bg-danger">Admin Mode</span>
-                    <span class="text-muted small">Hệ thống quản lý thương mại điện tử</span>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <span class="fw-semibold">
-                        Xin chào, <span class="text-primary">@(Auth.CurrentUser?.FullName ?? "Administrator")</span>
-                    </span>
-                    <a class="btn btn-sm btn-outline-danger" href="/api/auth/logout">
-                        Đăng xuất
-                    </a>
-                </div>
-            </header>
-
-            <!-- Page Body -->
-            <div class="p-4 flex-grow-1">
-                @Body
+        <div class="mt-auto p-3 border-top border-secondary border-opacity-25 small">
+            <div class="text-white fw-semibold">
+                <i class="bi bi-person-fill text-danger me-1"></i> @(Auth.CurrentUser?.FullName ?? "Administrator")
             </div>
+            <div style="font-size: 0.75rem; color: #9ca3af;">Quyền: Quản Trị Viên</div>
+        </div>
+    </aside>
 
-            <!-- Footer -->
-            <footer class="bg-white border-top py-2 px-4 text-center text-muted small">
-                Blazor E-Commerce Admin Panel &copy; 2026 - PostgreSQL Database
-            </footer>
+    <!-- Main Content Canvas -->
+    <div class="d-flex flex-column flex-grow-1 overflow-hidden" style="background-color: #f4f6f9;">
+        <header class="admin-topbar bg-white border-bottom px-4 py-2 d-flex justify-content-between align-items-center shadow-sm">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-danger px-2 py-1">Admin Mode</span>
+                <span class="text-muted small d-none d-sm-inline">Hệ thống quản lý bán lẻ Blazor Shop</span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="small text-muted d-none d-md-inline">
+                    Xin chào, <strong class="text-dark">@(Auth.CurrentUser?.FullName ?? "Admin")</strong>
+                </span>
+                <a class="btn btn-sm btn-outline-danger" href="/api/auth/logout">
+                    <i class="bi bi-box-arrow-right me-1"></i> Đăng xuất
+                </a>
+            </div>
+        </header>
+
+        <main class="admin-content p-4 flex-grow-1">
+            @Body
         </main>
+
+        <footer class="admin-footer bg-white border-top py-2 px-4 text-center text-muted small">
+            Blazor Shop Admin Portal &copy; 2026 - ASP.NET Core Identity & PostgreSQL
+        </footer>
     </div>
 </div>
 

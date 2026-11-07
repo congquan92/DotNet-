@@ -1,92 +1,237 @@
 @page "/admin"
 @model ECommerceWeb.Pages.Admin.IndexModel
-
 @{
-    ViewData["Title"] = "Tổng quan";
-    var currency = CultureInfo.GetCultureInfo("vi-VN");
+    ViewData["Title"] = "Bảng Điều Khiển Quản Trị - Mobi Admin";
 }
 
-<section class="admin-page-heading" aria-labelledby="admin-title">
-    <div>
-        <p class="eyebrow">KHÔNG GIAN QUẢN TRỊ</p>
-        <h1 id="admin-title">Tổng quan cửa hàng<span>.</span></h1>
-        <p>Danh mục điện thoại của Mobi, gọn trong một màn hình.</p>
-    </div>
-    <a class="button button-outline" asp-page="/Index">Xem cửa hàng <span aria-hidden="true">↗</span></a>
-</section>
-
-<section class="admin-stats" aria-label="Thống kê danh mục sản phẩm">
-    <div class="admin-stat admin-stat-primary">
-        <div class="admin-stat-label">Điện thoại trong danh mục <span aria-hidden="true">01</span></div>
-        <strong>@Model.Products.Count.ToString("D2")</strong>
-        <p>Mẫu điện thoại đang hiển thị</p>
-    </div>
-    <div class="admin-stat">
-        <div class="admin-stat-label">Thương hiệu <span aria-hidden="true">02</span></div>
-        <strong>@Model.BrandCount.ToString("D2")</strong>
-        <p>@string.Join(" · ", Model.Products.Select(product => product.Brand).Distinct())</p>
-    </div>
-    <div class="admin-stat">
-        <div class="admin-stat-label">Giá thấp nhất <span aria-hidden="true">03</span></div>
-        <strong class="admin-stat-price">@Model.LowestPrice.ToString("N0", currency)<small>₫</small></strong>
-        <p>Trong danh mục hiện tại</p>
-    </div>
-    <div class="admin-stat">
-        <div class="admin-stat-label">Giá cao nhất <span aria-hidden="true">04</span></div>
-        <strong class="admin-stat-price">@Model.HighestPrice.ToString("N0", currency)<small>₫</small></strong>
-        <p>Trong danh mục hiện tại</p>
-    </div>
-</section>
-
-<section class="admin-catalog" id="admin-products" aria-labelledby="admin-products-title">
-    <div class="admin-section-heading">
+<div>
+    <!-- Page Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
         <div>
-            <p class="eyebrow">BỘ SƯU TẬP MOBI</p>
-            <h2 id="admin-products-title">Danh mục điện thoại</h2>
+            <h3 class="fw-bold m-0 text-dark">
+                <i class="bi bi-speedometer2 text-danger me-2"></i> Bảng Điều Khiển Quản Trị
+            </h3>
+            <p class="text-muted small m-0 mt-1">Tổng quan số liệu kinh doanh và danh mục điện thoại Mobi Shop</p>
         </div>
-        <span class="admin-count">@Model.Products.Count sản phẩm</span>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-danger btn-sm px-3" asp-page="/Index" target="_blank">
+                <i class="bi bi-box-arrow-up-right me-1"></i> Xem Cửa Hàng
+            </a>
+        </div>
     </div>
 
-    <div class="admin-table-scroll" role="region" aria-label="Danh mục điện thoại, có thể cuộn ngang trên màn hình nhỏ" tabindex="0">
-        <table class="admin-product-table">
-            <caption class="admin-sr-only">Sản phẩm, thương hiệu, dung lượng và giá bán trong cửa hàng Mobi</caption>
-            <thead>
-                <tr>
-                    <th scope="col">Sản phẩm</th>
-                    <th scope="col">Thương hiệu</th>
-                    <th scope="col">Dung lượng</th>
-                    <th scope="col" class="admin-price-column">Giá bán</th>
-                    <th scope="col"><span class="admin-sr-only">Chi tiết sản phẩm</span></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var product in Model.Products)
+    <!-- 1. KPI Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold">Tổng Doanh Thu</span>
+                        <h4 class="fw-bold text-danger m-0 mt-1">@Model.TotalRevenue.ToString("N0") đ</h4>
+                        <span class="text-success small fw-semibold"><i class="bi bi-graph-up-arrow"></i> Doanh thu thực tế</span>
+                    </div>
+                    <div class="cat-icon-circle m-0 bg-danger-subtle text-danger">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold">Tổng Đơn Hàng</span>
+                        <h4 class="fw-bold text-dark m-0 mt-1">@Model.TotalOrders đơn</h4>
+                        <span class="text-muted small">Cập nhật thời gian thực</span>
+                    </div>
+                    <div class="cat-icon-circle m-0 bg-primary-subtle text-primary">
+                        <i class="bi bi-bag-check-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold">Tổng Sản Phẩm</span>
+                        <h4 class="fw-bold text-dark m-0 mt-1">@Model.TotalProducts mặt hàng</h4>
+                        <span class="text-muted small">Đang kinh doanh trong kho</span>
+                    </div>
+                    <div class="cat-icon-circle m-0 bg-warning-subtle text-warning-emphasis">
+                        <i class="bi bi-box-seam-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold">Khách Hàng</span>
+                        <h4 class="fw-bold text-dark m-0 mt-1">@Model.TotalCustomers thành viên</h4>
+                        <span class="text-muted small">Đã lưu trong database</span>
+                    </div>
+                    <div class="cat-icon-circle m-0 bg-info-subtle text-info-emphasis">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Recent Orders & Low Stock Warning -->
+    <div class="row g-4 mb-4">
+        <!-- Đơn hàng gần đây -->
+        <div class="col-12 col-lg-8">
+            <div class="bg-white rounded-4 p-4 shadow-sm border border-light h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h5 class="fw-bold m-0 text-dark">
+                        <i class="bi bi-clock-history text-danger me-1"></i> Đơn Hàng Gần Đây
+                    </h5>
+                    <span class="text-muted small">5 đơn mới nhất</span>
+                </div>
+
+                @if (!Model.RecentOrders.Any())
                 {
-                    <tr>
-                        <th scope="row">
-                            <div class="admin-product">
-                                <a class="admin-product-image" asp-page="/Product" asp-route-id="@product.Id" tabindex="-1" aria-hidden="true">
-                                    <img src="@product.ImageUrl" alt="" width="64" height="72" loading="lazy" />
-                                </a>
-                                <div>
-                                    <a class="admin-product-name" asp-page="/Product" asp-route-id="@product.Id">@product.Name</a>
-                                    <p>@product.Color</p>
-                                </div>
-                            </div>
-                        </th>
-                        <td><span class="admin-brand-tag">@product.Brand</span></td>
-                        <td>@product.Storage</td>
-                        <td class="admin-price-column">@product.Price.ToString("N0", currency) ₫</td>
-                        <td class="admin-detail-column"><a class="admin-detail-link" asp-page="/Product" asp-route-id="@product.Id" aria-label="Xem chi tiết @product.Name">Xem <span aria-hidden="true">↗</span></a></td>
-                    </tr>
+                    <div class="text-muted text-center py-4">Chưa có đơn hàng nào trong hệ thống.</div>
                 }
-            </tbody>
-        </table>
-    </div>
-    <div class="admin-catalog-note">Giá hiển thị theo danh mục sản phẩm hiện tại của cửa hàng.</div>
-</section>
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle small mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#Mã</th>
+                                    <th>Khách hàng</th>
+                                    <th>Thời gian</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.RecentOrders)
+                                {
+                                    <tr>
+                                        <td class="fw-bold text-danger">#@order.Id</td>
+                                        <td>
+                                            <div class="fw-semibold">@(order.Customer?.FullName ?? "Khách vãng lai")</div>
+                                            <div class="text-muted" style="font-size: 0.75rem;">@(order.Customer?.Phone ?? "")</div>
+                                        </td>
+                                        <td class="text-muted">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td class="fw-bold text-dark">@order.TotalAmount.ToString("N0") đ</td>
+                                        <td>
+                                            <span class="badge @(order.Status == "Completed" ? "bg-success-subtle text-success" : (order.Status == "Processing" ? "bg-warning-subtle text-warning-emphasis" : "bg-secondary-subtle text-secondary")) px-2 py-1">
+                                                @order.Status
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
 
-<footer class="admin-page-footer">
-    <span>Mobi · Không gian quản trị</span>
-    <span>Dữ liệu từ danh mục cửa hàng</span>
-</footer>
+        <!-- Cảnh báo tồn kho -->
+        <div class="col-12 col-lg-4">
+            <div class="bg-white rounded-4 p-4 shadow-sm border border-light h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h5 class="fw-bold m-0 text-dark">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> Cần Lưu Ý Kho
+                    </h5>
+                    <span class="text-muted small">Tồn kho thấp</span>
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    @foreach (var prod in Model.LowStockProducts)
+                    {
+                        <div class="d-flex align-items-center gap-3 p-2 rounded-3 bg-light border">
+                            <img src="@prod.ImageUrl" alt="@prod.Name" style="width: 48px; height: 48px; object-fit: contain;" class="rounded bg-white p-1"
+                                 onerror="this.src='https://placehold.co/100x100?text=No+Image'" />
+                            <div class="flex-grow-1 overflow-hidden">
+                                <div class="text-truncate fw-semibold small" title="@prod.Name">@prod.Name</div>
+                                <span class="badge bg-danger-subtle text-danger" style="font-size: 0.72rem;">Còn: @prod.Stock chiếc</span>
+                            </div>
+                            <a asp-page="/Product" asp-route-id="@prod.Id" target="_blank" class="btn btn-outline-secondary btn-sm p-1 px-2" title="Xem chi tiết">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Toàn bộ danh mục điện thoại -->
+    <div class="bg-white rounded-4 p-4 shadow-sm border border-light">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-2 border-bottom gap-2">
+            <div>
+                <h5 class="fw-bold m-0 text-dark">
+                    <i class="bi bi-phone-fill text-danger me-1"></i> Danh Mục Điện Thoại Trong Kho
+                </h5>
+                <span class="text-muted small">Hiển thị toàn bộ <strong>@Model.Products.Count</strong> sản phẩm</span>
+            </div>
+            <span class="badge bg-danger-subtle text-danger px-3 py-2 fw-semibold">
+                Đồng bộ PostgreSQL
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle small mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 60px;">#ID</th>
+                        <th style="width: 70px;">Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Danh mục</th>
+                        <th>Màu sắc</th>
+                        <th>Dung lượng</th>
+                        <th>Đơn giá</th>
+                        <th class="text-center">Tồn kho</th>
+                        <th class="text-center" style="width: 100px;">Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var prod in Model.Products)
+                    {
+                        <tr>
+                            <td class="fw-bold text-muted">#@prod.Id</td>
+                            <td>
+                                <img src="@prod.ImageUrl" alt="@prod.Name" style="width: 45px; height: 45px; object-fit: contain;" class="rounded bg-light p-1 border"
+                                     onerror="this.src='https://placehold.co/100x100?text=No+Image'" />
+                            </td>
+                            <td>
+                                <a asp-page="/Product" asp-route-id="@prod.Id" target="_blank" class="fw-semibold text-dark text-decoration-none">
+                                    @prod.Name
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary-subtle text-secondary">
+                                    @(prod.Category?.Name ?? prod.Brand)
+                                </span>
+                            </td>
+                            <td class="text-muted">@prod.Color</td>
+                            <td class="text-muted">@prod.Storage</td>
+                            <td class="fw-bold text-danger">@prod.Price.ToString("N0") đ</td>
+                            <td class="text-center">
+                                <span class="badge @(prod.Stock > 10 ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning-emphasis")">
+                                    @prod.Stock
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <a asp-page="/Product" asp-route-id="@prod.Id" target="_blank" class="btn btn-sm btn-outline-danger px-2 py-1" title="Xem trên web">
+                                    <i class="bi bi-box-arrow-up-right"></i> Xem
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

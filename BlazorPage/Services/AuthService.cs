@@ -1,7 +1,9 @@
 using System.Security.Claims;
+using BlazorPage.Data;
 using BlazorPage.Data.Entities;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 
@@ -9,7 +11,7 @@ namespace BlazorPage.Services;
 
 public class CurrentUserInfo
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public string Username { get; set; } = string.Empty;
     public string Role { get; set; } = "User";
     public string FullName { get; set; } = string.Empty;
@@ -22,6 +24,7 @@ public class CurrentUserInfo
 public class AuthService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IServiceProvider _serviceProvider;
     private readonly AuthenticationStateProvider? _authStateProvider;
     private bool _isInitialized = false;
 
@@ -35,6 +38,7 @@ public class AuthService
     public AuthService(IHttpContextAccessor httpContextAccessor, IServiceProvider serviceProvider)
     {
         _httpContextAccessor = httpContextAccessor;
+        _serviceProvider = serviceProvider;
         _authStateProvider = serviceProvider.GetService<AuthenticationStateProvider>();
     }
 
@@ -61,16 +65,33 @@ public class AuthService
 
             if (user != null && user.Identity?.IsAuthenticated == true)
             {
+                var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+                var username = user.Identity.Name ?? string.Empty;
+                var role = user.FindFirst(ClaimTypes.Role)?.Value ?? "User";
+
+                Customer? customer = null;
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var dbFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
+                    await using var db = await dbFactory.CreateDbContextAsync();
+                    customer = await db.Customers.FirstOrDefaultAsync(c => c.UserId == userId);
+                }
+                catch (Exception dbEx)
+                {
+                    Console.WriteLine($"[AuthService DB Error]: {dbEx.Message}");
+                }
+
                 CurrentUser = new CurrentUserInfo
                 {
-                    Id = int.TryParse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var id) ? id : 0,
-                    Username = user.Identity.Name ?? string.Empty,
-                    Role = user.FindFirst(ClaimTypes.Role)?.Value ?? "User",
-                    FullName = user.FindFirst(ClaimTypes.GivenName)?.Value ?? user.Identity.Name ?? string.Empty,
-                    Email = user.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty,
-                    Phone = user.FindFirst(ClaimTypes.MobilePhone)?.Value ?? string.Empty,
-                    Address = user.FindFirst(ClaimTypes.StreetAddress)?.Value ?? string.Empty,
-                    CustomerId = int.TryParse(user.FindFirst("CustomerId")?.Value, out var cid) ? cid : null
+                    Id = userId,
+                    Username = username,
+                    Role = role,
+                    FullName = customer?.FullName ?? user.FindFirst(ClaimTypes.GivenName)?.Value ?? username,
+                    Email = customer?.Email ?? user.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty,
+                    Phone = customer?.Phone ?? user.FindFirst(ClaimTypes.MobilePhone)?.Value ?? string.Empty,
+                    Address = customer?.Address ?? user.FindFirst(ClaimTypes.StreetAddress)?.Value ?? string.Empty,
+                    CustomerId = customer?.Id
                 };
             }
             else
@@ -87,7 +108,6 @@ public class AuthService
         }
     }
 
-    // Overload tương thích ngược
     public Task InitializeAsync(IJSRuntime? js) => InitializeAsync();
 
     public async Task EnsureInitializedAsync()
@@ -98,33 +118,16 @@ public class AuthService
         }
     }
 
-    public void Login(Account account, string? customerFullName = null)
+    public void Login(ApplicationUser user, string? role = null, string? customerFullName = null)
     {
         CurrentUser = new CurrentUserInfo
         {
-            Id = account.Id,
-            Username = account.Username,
-            Role = account.Role,
-            FullName = !string.IsNullOrWhiteSpace(customerFullName) ? customerFullName : account.Username
+            Id = user.Id,
+            Username = user.UserName ?? string.Empty,
+            Role = role ?? "User",
+            FullName = !string.IsNullOrWhiteSpace(customerFullName) ? customerFullName : (user.FullName ?? user.UserName ?? string.Empty)
         };
         NotifyStateChanged();
-    }
-
-    public Task LoginAsync(Account account, Customer? customer, IJSRuntime? js = null)
-    {
-        CurrentUser = new CurrentUserInfo
-        {
-            Id = account.Id,
-            Username = account.Username,
-            Role = account.Role,
-            FullName = !string.IsNullOrWhiteSpace(customer?.FullName) ? customer.FullName : account.Username,
-            Email = customer?.Email ?? string.Empty,
-            Phone = customer?.Phone ?? string.Empty,
-            Address = customer?.Address ?? string.Empty,
-            CustomerId = customer?.Id
-        };
-        NotifyStateChanged();
-        return Task.CompletedTask;
     }
 
     public Task UpdateProfileAsync(string fullName, string email, string phone, string address, IJSRuntime? js = null)

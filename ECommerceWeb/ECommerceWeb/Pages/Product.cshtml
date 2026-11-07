@@ -1,51 +1,166 @@
 @page "{id:int}"
 @model ECommerceWeb.Pages.ProductModel
-
 @{
-    ViewData["Title"] = Model.Product.Name;
+    ViewData["Title"] = $"{Model.Product.Name} - Mobi Shop";
     var product = Model.Product;
+    var currency = CultureInfo.GetCultureInfo("vi-VN");
 }
 
-<div class="page-shell">
-    <nav class="breadcrumb-nav" aria-label="Đường dẫn">
-        <a asp-page="/Index">Trang chủ</a>
-        <span aria-hidden="true">/</span>
-        <a asp-page="/Index" asp-fragment="dien-thoai">Điện thoại</a>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page">@product.Name</span>
+<div class="container my-3">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-page="/Index" class="text-danger text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-page="/Index" asp-fragment="dien-thoai" class="text-danger text-decoration-none">Điện thoại</a></li>
+            <li class="breadcrumb-item active text-truncate" style="max-width: 300px;" aria-current="page">@product.Name</li>
+        </ol>
     </nav>
 
-    <section class="product-detail" aria-labelledby="product-name">
-        <div class="detail-gallery">
-            <img class="detail-image" src="@product.ImageUrl" alt="@product.Name màu @product.Color" width="720" height="720" />
-        </div>
-
-        <div class="detail-content">
-            <p class="eyebrow">@product.Brand · @product.Storage</p>
-            <h1 id="product-name">@product.Name</h1>
-            <p class="detail-description">@product.Description</p>
-
-            <div class="detail-price">
-                <small>Giá bán</small>
-                <p>@product.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) ₫</p>
+    <!-- Product Showcase -->
+    <div class="bg-white rounded-4 p-4 shadow-sm border border-light mb-4">
+        <div class="row g-4">
+            <!-- Left: Product Image -->
+            <div class="col-12 col-md-5 d-flex flex-column align-items-center justify-content-center p-3 border-end">
+                <div class="position-relative w-100 text-center p-3" style="max-height: 420px;">
+                    <span class="badge-discount">-12%</span>
+                    <span class="badge-installment">Trả góp 0%</span>
+                    <img src="@product.ImageUrl" alt="@product.Name" class="img-fluid rounded-3" 
+                         style="max-height: 380px; object-fit: contain;" />
+                </div>
+                <div class="d-flex flex-wrap gap-2 justify-content-center mt-3 text-muted small">
+                    <span><i class="bi bi-shield-check text-success me-1"></i> Chính hãng 100%</span>
+                    <span>•</span>
+                    <span><i class="bi bi-arrow-repeat text-primary me-1"></i> 1 đổi 1 30 ngày</span>
+                    <span>•</span>
+                    <span><i class="bi bi-truck text-danger me-1"></i> Giao hàng toàn quốc</span>
+                </div>
             </div>
 
-            <form class="detail-purchase" method="post" asp-page="/Index" asp-page-handler="Add">
-                <input type="hidden" name="id" value="@product.Id" />
-                <button class="button button-primary" type="submit">Thêm vào giỏ hàng</button>
-            </form>
-            <a class="button button-outline" asp-page="/Index" asp-fragment="dien-thoai">Xem điện thoại khác</a>
+            <!-- Right: Product Info & Purchase Form -->
+            <div class="col-12 col-md-7 ps-md-4">
+                <span class="badge bg-danger-subtle text-danger fw-bold mb-2">@(product.Category?.Name ?? product.Brand)</span>
+                <h3 class="fw-bold mb-2 text-dark">@product.Name</h3>
 
-            <h2>Thông số kỹ thuật</h2>
-            <dl class="product-specs">
-                <div><dt>Thương hiệu</dt><dd>@product.Brand</dd></div>
-                <div><dt>Dung lượng</dt><dd>@product.Storage</dd></div>
-                <div><dt>Màu sắc</dt><dd>@product.Color</dd></div>
-                <div><dt>Màn hình</dt><dd>@product.Display</dd></div>
-                <div><dt>Bộ xử lý</dt><dd>@product.Chip</dd></div>
-                <div><dt>Camera sau</dt><dd>@product.Camera</dd></div>
-                <div><dt>Pin</dt><dd>@product.Battery</dd></div>
-            </dl>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="product-rating">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1">5.0</span>
+                        <span class="review-count">(128 đánh giá)</span>
+                    </div>
+                    <span class="text-muted">|</span>
+                    <span class="badge @(product.Stock > 0 ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger") px-2 py-1">
+                        @(product.Stock > 0 ? $"Còn hàng ({product.Stock} sản phẩm)" : "Hết hàng")
+                    </span>
+                </div>
+
+                <!-- Price Box -->
+                <div class="bg-light rounded-3 p-3 mb-3 border">
+                    <div class="d-flex align-items-baseline gap-3">
+                        <span class="fs-2 fw-bold text-danger">@product.Price.ToString("N0", currency) ₫</span>
+                        @if (product.OriginalPrice.HasValue && product.OriginalPrice > product.Price)
+                        {
+                            <span class="text-muted text-decoration-line-through fs-6">@product.OriginalPrice.Value.ToString("N0", currency) ₫</span>
+                            <span class="badge bg-danger">Tiết kiệm @((product.OriginalPrice.Value - product.Price).ToString("N0", currency)) ₫</span>
+                        }
+                    </div>
+                    <div class="small text-danger fw-semibold mt-1">
+                        <i class="bi bi-gem me-1"></i> Giá ưu đãi đặc quyền cho thành viên Smember: giảm thêm 200.000đ
+                    </div>
+                </div>
+
+                <!-- Promotion Box -->
+                <div class="border border-danger-subtle rounded-3 p-3 mb-4 bg-danger-subtle bg-opacity-10">
+                    <h6 class="fw-bold text-danger mb-2"><i class="bi bi-gift-fill me-1"></i> Khuyến mãi đặc biệt</h6>
+                    <ul class="small mb-0 ps-3 text-secondary">
+                        <li>Tặng củ sạc nhanh 30W chính hãng kèm máy.</li>
+                        <li>Trợ giá thu cũ đổi mới lên đến 2.000.000đ.</li>
+                        <li>Giảm 10% khi mua kèm phụ kiện (ốp lưng, cường lực, tai nghe).</li>
+                    </ul>
+                </div>
+
+                <!-- Purchase Form -->
+                <form method="post" asp-page-handler="Add">
+                    <input type="hidden" name="id" value="@product.Id" />
+
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <label class="fw-semibold small">Số lượng:</label>
+                        <input type="number" name="quantity" value="1" min="1" max="@product.Stock" 
+                               class="form-control text-center" style="width: 85px;" />
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" name="actionType" value="buyNow" class="btn btn-cps-red btn-lg flex-grow-1 fw-bold shadow-sm">
+                            <i class="bi bi-bag-check-fill me-1"></i> MUA NGAY
+                            <small class="d-block fw-normal" style="font-size: 0.72rem;">(Giao hàng tận nơi hoặc nhận tại cửa hàng)</small>
+                        </button>
+
+                        <button type="submit" name="actionType" value="addToCart" class="btn btn-cps-outline btn-lg fw-bold px-4">
+                            <i class="bi bi-cart-plus me-1"></i> THÊM VÀO GIỎ
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </section>
+    </div>
+
+    <!-- Technical Specs & Description Section -->
+    <div class="row g-4">
+        <div class="col-12 col-lg-7">
+            <div class="bg-white rounded-4 p-4 shadow-sm border border-light h-100">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 border-bottom pb-2">
+                    <i class="bi bi-card-text text-danger"></i>
+                    <span>Đặc điểm nổi bật</span>
+                </h5>
+                <p class="text-secondary leading-relaxed" style="font-size: 0.95rem;">
+                    @product.Description
+                </p>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-5">
+            <div class="bg-white rounded-4 p-4 shadow-sm border border-light h-100">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 border-bottom pb-2">
+                    <i class="bi bi-gear-fill text-danger"></i>
+                    <span>Thông số kỹ thuật</span>
+                </h5>
+
+                <table class="table table-striped table-hover small mb-0">
+                    <tbody>
+                        @if (!string.IsNullOrEmpty(product.Brand))
+                        {
+                            <tr><th class="text-muted" style="width: 35%;">Thương hiệu</th><td class="fw-semibold">@product.Brand</td></tr>
+                        }
+                        @if (!string.IsNullOrEmpty(product.Storage))
+                        {
+                            <tr><th class="text-muted">Bộ nhớ trong</th><td class="fw-semibold">@product.Storage</td></tr>
+                        }
+                        @if (!string.IsNullOrEmpty(product.Color))
+                        {
+                            <tr><th class="text-muted">Màu sắc</th><td class="fw-semibold">@product.Color</td></tr>
+                        }
+                        @if (!string.IsNullOrEmpty(product.Display))
+                        {
+                            <tr><th class="text-muted">Màn hình</th><td>@product.Display</td></tr>
+                        }
+                        @if (!string.IsNullOrEmpty(product.Chip))
+                        {
+                            <tr><th class="text-muted">Vi xử lý (CPU)</th><td class="fw-semibold">@product.Chip</td></tr>
+                        }
+                        @if (!string.IsNullOrEmpty(product.Camera))
+                        {
+                            <tr><th class="text-muted">Hệ thống Camera</th><td>@product.Camera</td></tr>
+                        }
+                        @if (!string.IsNullOrEmpty(product.Battery))
+                        {
+                            <tr><th class="text-muted">Pin & Sạc</th><td>@product.Battery</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>

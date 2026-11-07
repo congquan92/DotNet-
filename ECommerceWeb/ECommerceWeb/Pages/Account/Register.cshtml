@@ -1,0 +1,85 @@
+@page
+@model ECommerceWeb.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Đăng Ký Tài Khoản - MOBI SHOP";
+}
+
+<div class="page-shell my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="p-4 text-white text-center" style="background: linear-gradient(135deg, #d70018, #b50014) !important;">
+                    <div class="display-6 mb-1">
+                        <i class="bi bi-person-plus-fill"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">Tạo Tài Khoản Mới</h3>
+                    <p class="text-white-50 small mb-0">Trải nghiệm mua sắm tiện lợi và an toàn cùng Mobi</p>
+                </div>
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 mb-3"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6 mb-2">
+                                <label asp-for="Input.Username" class="form-label small fw-semibold">Tên đăng nhập</label>
+                                <input asp-for="Input.Username" class="form-control py-2" placeholder="Tên đăng nhập..." autofocus />
+                                <span asp-validation-for="Input.Username" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label asp-for="Input.FullName" class="form-label small fw-semibold">Họ và tên</label>
+                                <input asp-for="Input.FullName" class="form-control py-2" placeholder="Họ và tên..." />
+                                <span asp-validation-for="Input.FullName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label asp-for="Input.Email" class="form-label small fw-semibold">Email</label>
+                                <input asp-for="Input.Email" class="form-control py-2" type="email" placeholder="Địa chỉ email..." />
+                                <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label asp-for="Input.Phone" class="form-label small fw-semibold">Số điện thoại</label>
+                                <input asp-for="Input.Phone" class="form-control py-2" placeholder="Số điện thoại..." />
+                                <span asp-validation-for="Input.Phone" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 mb-2">
+                                <label asp-for="Input.Address" class="form-label small fw-semibold">Địa chỉ</label>
+                                <input asp-for="Input.Address" class="form-control py-2" placeholder="Địa chỉ nhận hàng (tùy chọn)..." />
+                                <span asp-validation-for="Input.Address" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label asp-for="Input.Password" class="form-label small fw-semibold">Mật khẩu</label>
+                                <input asp-for="Input.Password" class="form-control py-2" placeholder="Mật khẩu..." />
+                                <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.ConfirmPassword" class="form-label small fw-semibold">Xác nhận mật khẩu</label>
+                                <input asp-for="Input.ConfirmPassword" class="form-control py-2" placeholder="Xác nhận mật khẩu..." />
+                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-cps-red w-100 py-2 fw-bold shadow-sm mb-3">
+                            <i class="bi bi-check2-circle me-1"></i> Hoàn Tất Đăng Ký
+                        </button>
+
+                        <div class="text-center small text-muted">
+                            Đã có tài khoản? 
+                            <a asp-page="/Account/Login" class="text-danger fw-semibold text-decoration-none">
+                                Đăng nhập ngay
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

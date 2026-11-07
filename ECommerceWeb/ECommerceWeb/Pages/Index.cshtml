@@ -1,74 +1,280 @@
 @page
 @model ECommerceWeb.Pages.IndexModel
 @{
-    ViewData["Title"] = "Điện thoại cho điều bạn thích";
-    var featured = Model.Products[0];
+    ViewData["Title"] = "Trang Chủ - Siêu Thị Công Nghệ Mobi Shop";
     var currency = CultureInfo.GetCultureInfo("vi-VN");
 }
 
-<div class="page-shell home-page">
-    <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-copy">
-            <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> CHẠM VÀO ĐIỀU MỚI</p>
-            <h1 id="hero-title">Đổi điện thoại.<br /><span>Nâng trải nghiệm.</span></h1>
-            <p class="hero-description">Từ những khoảnh khắc thường ngày đến điều bạn đang ấp ủ. Tìm chiếc điện thoại sẵn sàng đồng hành cùng bạn.</p>
-            <div class="hero-actions">
-                <a class="button button-primary" href="#dien-thoai">Khám phá điện thoại <span aria-hidden="true">↗</span></a>
-                <a class="text-link" asp-page="/Product" asp-route-id="@featured.Id">Gặp gỡ iPhone 16 Pro Max <span aria-hidden="true">→</span></a>
-            </div>
-            <div class="hero-note"><span class="hero-note-line" aria-hidden="true"></span> Apple & Samsung. Những lựa chọn đáng khám phá.</div>
-        </div>
-        <a class="hero-visual" asp-page="/Product" asp-route-id="@featured.Id" aria-label="Xem chi tiết @featured.Name">
-            <div class="hero-visual-top"><span class="feature-label">TÂM ĐIỂM</span><span class="circle-arrow" aria-hidden="true">↗</span></div>
-            <span class="hero-background-word" aria-hidden="true">Pro.</span>
-            <img class="hero-phone" src="@featured.ImageUrl" alt="@featured.Name màu @featured.Color" width="600" height="600" fetchpriority="high" />
-            <div class="hero-visual-bottom"><div><span>THIẾT KẾ TITAN. HIỆU NĂNG PRO.</span><h2>@featured.Name</h2></div><span class="storage-tag">@featured.Storage</span></div>
-        </a>
-    </section>
-
-    <div class="collection-navigation" aria-label="Bộ sưu tập theo thương hiệu">
-        <a href="#apple"><span class="collection-number">01</span><strong>Apple</strong><span>Trải nghiệm iPhone <span aria-hidden="true">↗</span></span></a>
-        <a href="#samsung"><span class="collection-number">02</span><strong>Samsung</strong><span>Khám phá Galaxy <span aria-hidden="true">↗</span></span></a>
-    </div>
-
-    <section class="catalog" id="dien-thoai" aria-labelledby="catalog-title">
-        <div class="section-heading">
-            <div><p class="eyebrow">BỘ SƯU TẬP ĐƯỢC CHỌN LỌC</p><h2 id="catalog-title">Tìm chiếc điện thoại của bạn.</h2></div>
-            <p>@Model.Products.Count lựa chọn.<br />Một chiếc dành cho bạn.</p>
-        </div>
-        @foreach (var collection in Model.Products.GroupBy(product => product.Brand))
-        {
-            <div class="collection-heading" id="@collection.Key.ToLowerInvariant()"><h3>@collection.Key</h3><span>@collection.Count() sản phẩm</span></div>
-            <div class="product-grid">
-                @foreach (var product in collection)
-                {
-                    <article class="product-card">
-                        <a class="product-image-link" asp-page="/Product" asp-route-id="@product.Id" aria-label="Xem chi tiết @product.Name">
-                            <span class="product-storage">@product.Storage</span>
-                            <img src="@product.ImageUrl" alt="@product.Name màu @product.Color" width="400" height="400" loading="lazy" />
-                            <span class="product-image-arrow" aria-hidden="true">↗</span>
-                        </a>
-                        <div class="product-card-content">
-                            <p class="product-brand">@product.Brand <span>· @product.Color</span></p>
-                            <h4><a class="product-name" asp-page="/Product" asp-route-id="@product.Id">@product.Name</a></h4>
-                            <p class="product-card-description">@product.Description</p>
-                            <div class="product-card-bottom">
-                                <p class="product-price">@product.Price.ToString("N0", currency) <span>₫</span></p>
-                                <form method="post" asp-page-handler="Add">
-                                    <input type="hidden" name="id" value="@product.Id" />
-                                    <button type="submit" class="add-to-cart" aria-label="Thêm @product.Name vào giỏ hàng" title="Thêm vào giỏ hàng">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7Z" /><path d="M8 8V6a4 4 0 0 1 8 0v2M9 14h6m-3-3v6" /></svg>
-                                    </button>
-                                </form>
+<div class="container my-3">
+    <!-- ==========================================
+         1. HERO PROMOTION BANNER (CellphoneS Red)
+         ========================================== -->
+    <div class="row g-3 mb-4">
+        <!-- Main Carousel -->
+        <div class="col-12 col-lg-8">
+            <div id="homeHeroCarousel" class="carousel slide shadow-sm rounded-4 overflow-hidden h-100" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="0" class="active"></button>
+                    <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="1"></button>
+                    <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="2"></button>
+                </div>
+                <div class="carousel-inner h-100">
+                    <div class="carousel-item active" style="min-height: 330px; background: linear-gradient(135deg, #1f2937, #111827);">
+                        <div class="d-flex flex-column justify-content-center h-100 p-4 p-md-5 text-white">
+                            <span class="badge bg-danger align-self-start mb-2 px-3 py-2 fw-bold">SIÊU PHẨM MỚI</span>
+                            <h2 class="display-6 fw-bold mb-2">iPhone 16 Pro Max</h2>
+                            <p class="text-white-50 mb-4" style="max-width: 450px;">Khung Titan sa mạc đẳng cấp, vi xử lý A18 Pro mạnh mẽ, camera zoom quang học 5x sắc nét.</p>
+                            <div>
+                                <a href="#dien-thoai" class="btn btn-warning fw-bold px-4 py-2 shadow-sm">
+                                    <i class="bi bi-cart-fill me-1"></i> Mua Ngay Giá Tốt
+                                </a>
                             </div>
                         </div>
-                    </article>
-                }
+                    </div>
+                    <div class="carousel-item" style="min-height: 330px; background: linear-gradient(135deg, #b50014, #d70018);">
+                        <div class="d-flex flex-column justify-content-center h-100 p-4 p-md-5 text-white">
+                            <span class="badge bg-warning text-dark align-self-start mb-2 px-3 py-2 fw-bold">TUẦN LỄ GALAXY</span>
+                            <h2 class="display-6 fw-bold mb-2">Samsung Galaxy S25 Ultra</h2>
+                            <p class="text-white-50 mb-4" style="max-width: 450px;">Quyền năng Galaxy AI, camera 200MP siêu zoom, Snapdragon 8 Elite hiệu năng đột phá.</p>
+                            <div>
+                                <a href="#samsung" class="btn btn-light fw-bold px-4 py-2 text-danger shadow-sm">
+                                    <i class="bi bi-stars me-1"></i> Khám Phá Galaxy
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item" style="min-height: 330px; background: linear-gradient(135deg, #0d6efd, #052c65);">
+                        <div class="d-flex flex-column justify-content-center h-100 p-4 p-md-5 text-white">
+                            <span class="badge bg-danger align-self-start mb-2 px-3 py-2 fw-bold">HỆ SINH THÁI APPLE</span>
+                            <h2 class="display-6 fw-bold mb-2">iPhone 16 Series Giảm Đến 3 Triệu</h2>
+                            <p class="text-white-50 mb-4" style="max-width: 450px;">Trợ giá thu cũ đổi mới, trả góp 0% lãi suất duyệt hồ sơ nhanh trong 5 phút.</p>
+                            <div>
+                                <a href="#apple" class="btn btn-warning fw-bold px-4 py-2 shadow-sm">
+                                    <i class="bi bi-apple me-1"></i> Xem Chi Tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
             </div>
-        }
-    </section>
-    <section class="closing-banner">
-        <div><p class="eyebrow">NHỎ GỌN TRONG TAY. RỘNG MỞ MỖI NGÀY.</p><h2>Chiếc điện thoại tiếp theo,<br />bắt đầu từ đây.</h2></div>
-        <a class="button button-light" href="#dien-thoai">Chọn điện thoại của bạn <span aria-hidden="true">↗</span></a>
-    </section>
+        </div>
+
+        <!-- Side Promo Cards -->
+        <div class="col-12 col-lg-4 d-flex flex-column gap-3">
+            <div class="bg-white rounded-4 p-3 shadow-sm border border-light flex-grow-1 d-flex flex-column justify-content-center">
+                <span class="badge bg-danger-subtle text-danger fw-bold small mb-1 align-self-start">ƯU ĐÃI ĐỘC QUYỀN</span>
+                <h6 class="fw-bold m-0 text-dark">Thu Cũ Đổi Mới Lên Đời</h6>
+                <p class="text-muted small m-0 mb-2">Trợ giá lên đến 2 triệu đồng khi nâng cấp Smartphone mới.</p>
+                <a href="#dien-thoai" class="text-danger fw-semibold small text-decoration-none">Tìm hiểu ngay &rarr;</a>
+            </div>
+            <div class="bg-white rounded-4 p-3 shadow-sm border border-light flex-grow-1 d-flex flex-column justify-content-center">
+                <span class="badge bg-warning-subtle text-warning-emphasis fw-bold small mb-1 align-self-start">THÀNH VIÊN SMEMBER</span>
+                <h6 class="fw-bold m-0 text-dark">Ưu Đãi Đặc Quyền Giảm Thêm 5%</h6>
+                <p class="text-muted small m-0 mb-2">Tích điểm đổi quà cho khách hàng thân thiết tại Mobi.</p>
+                <a asp-page="/Account/Register" class="text-danger fw-semibold small text-decoration-none">Đăng ký thành viên &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         2. CATEGORY QUICK ICONS
+         ========================================== -->
+    <div class="mb-4">
+        <div class="row row-cols-2 row-cols-sm-4 g-2 g-md-3">
+            <div class="col">
+                <a href="#apple" class="cat-quick-card">
+                    <div class="cat-icon-circle">
+                        <i class="bi bi-apple"></i>
+                    </div>
+                    <p class="cat-quick-title">Điện Thoại Apple</p>
+                    <span class="small text-muted">iPhone chính hãng</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="#samsung" class="cat-quick-card">
+                    <div class="cat-icon-circle">
+                        <i class="bi bi-phone"></i>
+                    </div>
+                    <p class="cat-quick-title">Samsung Galaxy</p>
+                    <span class="small text-muted">Galaxy S Series</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="#dien-thoai" class="cat-quick-card">
+                    <div class="cat-icon-circle">
+                        <i class="bi bi-fire"></i>
+                    </div>
+                    <p class="cat-quick-title">Bán Chạy Nhất</p>
+                    <span class="small text-muted">Top sản phẩm hot</span>
+                </a>
+            </div>
+            <div class="col">
+                <a asp-page="/Cart" class="cat-quick-card">
+                    <div class="cat-icon-circle">
+                        <i class="bi bi-cart3"></i>
+                    </div>
+                    <p class="cat-quick-title">Giỏ Hàng Của Bạn</p>
+                    <span class="small text-muted">Xem đơn & thanh toán</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         3. FLASH SALE SECTION
+         ========================================== -->
+    <div class="flash-sale-box">
+        <div class="flash-sale-header">
+            <div class="flash-sale-title">
+                <i class="bi bi-lightning-charge-fill text-warning fs-3"></i>
+                <span>GIỜ VÀNG GIÁ SỐC</span>
+            </div>
+            <div class="countdown-box">
+                <span class="text-white-50 small me-1">Kết thúc sau:</span>
+                <span class="badge-timer">02</span> :
+                <span class="badge-timer">45</span> :
+                <span class="badge-timer">18</span>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 g-3">
+            @foreach (var product in Model.Products.Take(3))
+            {
+                <div class="col">
+                    <div class="product-card shadow-sm">
+                        <span class="badge-discount">-12%</span>
+                        <span class="badge-installment">Trả góp 0%</span>
+
+                        <a asp-page="/Product" asp-route-id="@product.Id" class="product-image-box">
+                            <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                        </a>
+
+                        <div class="product-info">
+                            <a asp-page="/Product" asp-route-id="@product.Id" class="product-title" title="@product.Name">
+                                @product.Name
+                            </a>
+
+                            <div class="small text-muted mb-2">
+                                <span class="badge bg-light text-dark border">@product.Brand</span>
+                                @if (!string.IsNullOrEmpty(product.Storage))
+                                {
+                                    <span class="badge bg-light text-secondary border">@product.Storage</span>
+                                }
+                            </div>
+
+                            <div class="product-price-box">
+                                <span class="product-price">@product.Price.ToString("N0", currency) ₫</span>
+                                @if (product.OriginalPrice.HasValue && product.OriginalPrice > product.Price)
+                                {
+                                    <span class="product-original-price">@product.OriginalPrice.Value.ToString("N0", currency) ₫</span>
+                                }
+                            </div>
+
+                            <div class="product-promo-box">
+                                <i class="bi bi-gift-fill me-1"></i> Giảm thêm 500k qua thẻ tín dụng & Smember
+                            </div>
+
+                            <div class="d-flex gap-2 mt-3">
+                                <form method="post" asp-page-handler="Add" class="flex-grow-1 m-0">
+                                    <input type="hidden" name="id" value="@product.Id" />
+                                    <button type="submit" class="btn btn-cps-red w-100 py-2 small fw-semibold">
+                                        <i class="bi bi-cart-plus me-1"></i> Mua ngay
+                                    </button>
+                                </form>
+                                <a asp-page="/Product" asp-route-id="@product.Id" class="btn btn-outline-secondary py-2 px-3 small" title="Chi tiết">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- ==========================================
+         4. MAIN CATALOG
+         ========================================== -->
+    <div id="dien-thoai" class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+            <h4 class="fw-bold m-0 d-flex align-items-center gap-2">
+                <i class="bi bi-phone-fill text-danger"></i>
+                <span>Tất Cả Điện Thoại Chính Hãng</span>
+            </h4>
+            <span class="text-muted small">@Model.Products.Count sản phẩm có sẵn</span>
+        </div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 g-3">
+            @foreach (var product in Model.Products)
+            {
+                <div class="col" id="@product.Brand.ToLowerInvariant()">
+                    <div class="product-card shadow-sm">
+                        <span class="badge-discount">-10%</span>
+                        <span class="badge-installment">Trả góp 0%</span>
+
+                        <a asp-page="/Product" asp-route-id="@product.Id" class="product-image-box">
+                            <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                        </a>
+
+                        <div class="product-info">
+                            <a asp-page="/Product" asp-route-id="@product.Id" class="product-title" title="@product.Name">
+                                @product.Name
+                            </a>
+
+                            <div class="small text-muted mb-2">
+                                <span class="badge bg-light text-dark border">@product.Brand</span>
+                                @if (!string.IsNullOrEmpty(product.Storage))
+                                {
+                                    <span class="badge bg-light text-secondary border">@product.Storage</span>
+                                }
+                                @if (!string.IsNullOrEmpty(product.Color))
+                                {
+                                    <span class="badge bg-light text-secondary border">@product.Color</span>
+                                }
+                            </div>
+
+                            <div class="product-price-box">
+                                <span class="product-price">@product.Price.ToString("N0", currency) ₫</span>
+                                @if (product.OriginalPrice.HasValue && product.OriginalPrice > product.Price)
+                                {
+                                    <span class="product-original-price">@product.OriginalPrice.Value.ToString("N0", currency) ₫</span>
+                                }
+                            </div>
+
+                            <div class="product-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                                <span class="review-count">(4.8/5 · 128 đánh giá)</span>
+                            </div>
+
+                            <div class="product-promo-box">
+                                <i class="bi bi-shield-check me-1"></i> Bảo hành chính hãng 12 tháng tại trung tâm ủy quyền
+                            </div>
+
+                            <div class="d-flex gap-2 mt-3">
+                                <form method="post" asp-page-handler="Add" class="flex-grow-1 m-0">
+                                    <input type="hidden" name="id" value="@product.Id" />
+                                    <button type="submit" class="btn btn-cps-red w-100 py-2 small fw-semibold">
+                                        <i class="bi bi-cart-plus me-1"></i> Thêm giỏ hàng
+                                    </button>
+                                </form>
+                                <a asp-page="/Product" asp-route-id="@product.Id" class="btn btn-outline-secondary py-2 px-3 small" title="Chi tiết">
+                                    <i class="bi bi-info-circle"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>

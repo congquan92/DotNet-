@@ -4,111 +4,137 @@
 @rendermode InteractiveServer
 @inject IDbContextFactory<AppDbContext> DbFactory
 
-<PageTitle>Admin Dashboard - Tổng quan hệ thống</PageTitle>
+<PageTitle>Bảng Điều Khiển Quản Trị - Blazor Shop</PageTitle>
 
-<div class="mb-4">
-    <h2 class="fw-bold m-0">📊 Bảng Điều Khiển Quản Trị</h2>
-    <p class="text-muted small">Thống kê dữ liệu thực tế từ cơ sở dữ liệu PostgreSQL</p>
-</div>
+<div>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold m-0 text-dark">
+                <i class="bi bi-speedometer2 text-danger me-1"></i> Bảng Điều Khiển Quản Trị
+            </h3>
+            <p class="text-muted small m-0 mt-1">Tổng quan số liệu kinh doanh và trạng thái vận hành hệ thống</p>
+        </div>
+    </div>
 
-<!-- KPI Cards -->
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm p-3 bg-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="text-muted small text-uppercase fw-semibold">Tổng Doanh Thu</span>
-                    <h3 class="fw-bold text-success m-0">@totalRevenue.ToString("N0") đ</h3>
+    <!-- KPI Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold">Tổng Doanh Thu</span>
+                        <h4 class="fw-bold text-danger m-0 mt-1">@totalRevenue.ToString("N0") đ</h4>
+                        <span class="text-success small fw-semibold"><i class="bi bi-graph-up-arrow"></i> Doanh thu thực tế</span>
+                    </div>
+                    <div class="cat-icon-circle m-0 bg-danger-subtle text-danger" style="width: 50px; height: 50px; flex-shrink: 0;">
+                        <i class="bi bi-currency-dollar fs-4"></i>
+                    </div>
                 </div>
-                <div class="fs-2 text-success">💰</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold">Tổng Đơn Hàng</span>
+                        <h4 class="fw-bold text-dark m-0 mt-1">@totalOrders đơn</h4>
+                        <span class="text-muted small">Cập nhật thời gian thực</span>
+                    </div>
+                    <div class="cat-icon-circle m-0 bg-primary-subtle text-primary" style="width: 50px; height: 50px; flex-shrink: 0;">
+                        <i class="bi bi-bag-check-fill fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold">Số Sản Phẩm</span>
+                        <h4 class="fw-bold text-dark m-0 mt-1">@totalProducts mặt hàng</h4>
+                        <span class="text-muted small">Đang lưu hành trong kho</span>
+                    </div>
+                    <div class="cat-icon-circle m-0 bg-warning-subtle text-warning-emphasis" style="width: 50px; height: 50px; flex-shrink: 0;">
+                        <i class="bi bi-box-seam-fill fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold">Khách Hàng</span>
+                        <h4 class="fw-bold text-dark m-0 mt-1">@totalCustomers thành viên</h4>
+                        <span class="text-muted small">Đã lưu trong database</span>
+                    </div>
+                    <div class="cat-icon-circle m-0 bg-info-subtle text-info-emphasis" style="width: 50px; height: 50px; flex-shrink: 0;">
+                        <i class="bi bi-people-fill fs-4"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm p-3 bg-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="text-muted small text-uppercase fw-semibold">Tổng Đơn Hàng</span>
-                    <h3 class="fw-bold text-primary m-0">@totalOrders</h3>
-                </div>
-                <div class="fs-2 text-primary">📦</div>
-            </div>
+    <!-- Đơn hàng gần đây -->
+    <div class="bg-white rounded-4 p-4 shadow-sm border border-light">
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <h5 class="fw-bold m-0 text-dark">
+                <i class="bi bi-clock-history text-danger me-1"></i> Đơn Hàng Gần Đây
+            </h5>
+            <a href="admin/orders" class="small text-danger fw-semibold text-decoration-none">
+                Xem tất cả đơn hàng &rarr;
+            </a>
         </div>
-    </div>
 
-    <div class="col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm p-3 bg-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="text-muted small text-uppercase fw-semibold">Số Sản Phẩm</span>
-                    <h3 class="fw-bold text-warning m-0">@totalProducts</h3>
-                </div>
-                <div class="fs-2 text-warning">🏷️</div>
+        @if (recentOrders == null)
+        {
+            <div class="text-center py-4 text-muted">
+                <div class="spinner-border spinner-border-sm text-danger me-2" role="status"></div>
+                Đang tải dữ liệu...
             </div>
-        </div>
-    </div>
-
-    <div class="col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm p-3 bg-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="text-muted small text-uppercase fw-semibold">Khách Hàng</span>
-                    <h3 class="fw-bold text-info m-0">@totalCustomers</h3>
-                </div>
-                <div class="fs-2 text-info">👥</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Đơn hàng gần đây -->
-<div class="card border-0 shadow-sm bg-white p-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold m-0">📋 Đơn Hàng Gần Đây</h5>
-        <a href="admin/orders" class="btn btn-sm btn-outline-primary">Xem tất cả đơn hàng &rarr;</a>
-    </div>
-
-    @if (recentOrders == null)
-    {
-        <p class="text-muted text-center py-3">Đang tải dữ liệu...</p>
-    }
-    else if (recentOrders.Count == 0)
-    {
-        <p class="text-muted text-center py-3">Chưa có đơn hàng nào trong hệ thống.</p>
-    }
-    else
-    {
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Mã Đơn</th>
-                        <th>Khách Hàng</th>
-                        <th>Ngày Đặt</th>
-                        <th>Tổng Tiền</th>
-                        <th>Trạng Thái</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var order in recentOrders)
-                    {
+        }
+        else if (recentOrders.Count == 0)
+        {
+            <div class="text-muted text-center py-4">Chưa có đơn hàng nào trong hệ thống.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle small mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <td class="fw-bold">#@order.Id</td>
-                            <td>@(order.Customer?.FullName ?? "Khách vãng lai")</td>
-                            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                            <td class="fw-bold text-danger">@order.TotalAmount.ToString("N0") đ</td>
-                            <td>
-                                <span class="badge @GetStatusBadge(order.Status)">
-                                    @order.Status
-                                </span>
-                            </td>
+                            <th>#Mã Đơn</th>
+                            <th>Khách Hàng</th>
+                            <th>Ngày Đặt</th>
+                            <th>Tổng Tiền</th>
+                            <th>Trạng Thái</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
+                    </thead>
+                    <tbody>
+                        @foreach (var order in recentOrders)
+                        {
+                            <tr>
+                                <td class="fw-bold">#@order.Id</td>
+                                <td>@(order.Customer?.FullName ?? "Khách vãng lai")</td>
+                                <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="fw-bold text-danger">@order.TotalAmount.ToString("N0") đ</td>
+                                <td>
+                                    <span class="badge @GetStatusBadge(order.Status) px-2 py-1">
+                                        @order.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
 </div>
 
 @code {
@@ -138,10 +164,10 @@
 
     private string GetStatusBadge(string status) => status switch
     {
-        "Pending" => "bg-warning text-dark",
-        "Processing" => "bg-info text-white",
-        "Completed" => "bg-success text-white",
-        "Cancelled" => "bg-danger text-white",
-        _ => "bg-secondary text-white"
+        "Pending" => "bg-warning-subtle text-warning-emphasis fw-semibold",
+        "Processing" => "bg-primary-subtle text-primary fw-semibold",
+        "Completed" => "bg-success-subtle text-success fw-semibold",
+        "Cancelled" => "bg-danger-subtle text-danger fw-semibold",
+        _ => "bg-secondary-subtle text-secondary fw-semibold"
     };
 }

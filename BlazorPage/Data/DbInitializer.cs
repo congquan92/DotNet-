@@ -1,54 +1,102 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using BlazorPage.Data.Entities;
 
 namespace BlazorPage.Data;
 
 public static class DbInitializer
 {
-    public static async Task SeedAsync(AppDbContext context)
+    public static async Task SeedAsync(IServiceProvider serviceProvider)
     {
+        var context = serviceProvider.GetRequiredService<AppDbContext>();
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
         // Đảm bảo DB và các bảng đã được tạo
         await context.Database.EnsureCreatedAsync();
 
-        if (await context.Categories.AnyAsync())
+        // 1. Seed Roles
+        string[] roles = ["Admin", "Manager", "Staff", "User"];
+        foreach (var role in roles)
         {
-            return; // Đã có dữ liệu, không seed lại
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole(role));
+            }
         }
 
-        // 1. Seed Accounts
-        var adminAccount = new Account
+        // 2. Seed Admin Account
+        var adminUser = await userManager.FindByNameAsync("admin");
+        if (adminUser == null)
         {
-            Username = "admin",
-            Password = "123",
-            Role = "Admin",
-            Status = "Active"
-        };
+            adminUser = new ApplicationUser
+            {
+                UserName = "admin",
+                Email = "admin@blazorshop.com",
+                FullName = "Quản Trị Viên Hệ Thống",
+                PhoneNumber = "0900000001",
+                EmailConfirmed = true
+            };
+            var result = await userManager.CreateAsync(adminUser, "123");
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
 
-        var userAccount = new Account
+                var adminCustomer = new Customer
+                {
+                    FullName = adminUser.FullName,
+                    Email = adminUser.Email,
+                    Phone = adminUser.PhoneNumber,
+                    Address = "Hà Nội, Việt Nam",
+                    UserId = adminUser.Id
+                };
+                context.Customers.Add(adminCustomer);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        // 3. Seed Normal User
+        Customer? customer1 = null;
+        var demoUser = await userManager.FindByNameAsync("user1");
+        if (demoUser == null)
         {
-            Username = "user1",
-            Password = "123",
-            Role = "User",
-            Status = "Active"
-        };
+            demoUser = new ApplicationUser
+            {
+                UserName = "user1",
+                Email = "an.nguyen@example.com",
+                FullName = "Nguyễn Văn An",
+                PhoneNumber = "0901234567",
+                EmailConfirmed = true
+            };
+            var result = await userManager.CreateAsync(demoUser, "123");
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(demoUser, "User");
 
-        context.Accounts.AddRange(adminAccount, userAccount);
-        await context.SaveChangesAsync();
-
-        // 2. Seed Customers (Chỉ tài khoản người dùng mới có hồ sơ khách hàng)
-        var customer1 = new Customer
+                customer1 = new Customer
+                {
+                    FullName = demoUser.FullName,
+                    Email = demoUser.Email,
+                    Phone = demoUser.PhoneNumber,
+                    Address = "123 Lê Lợi, Q.1, TP.HCM",
+                    UserId = demoUser.Id
+                };
+                context.Customers.Add(customer1);
+                await context.SaveChangesAsync();
+            }
+        }
+        else
         {
-            FullName = "Nguyễn Văn An",
-            Email = "an.nguyen@example.com",
-            Phone = "0901234567",
-            Address = "123 Lê Lợi, Q.1, TP.HCM",
-            AccountId = userAccount.Id
-        };
+            customer1 = await context.Customers.FirstOrDefaultAsync(c => c.UserId == demoUser.Id);
+        }
 
-        context.Customers.Add(customer1);
-        await context.SaveChangesAsync();
+        if (await context.Categories.AnyAsync())
+        {
+            return; // Đã có danh mục & sản phẩm, không seed lại
+        }
 
-        // 3. Seed Categories
+        // 4. Seed Categories
         var catLaptop = new Category { Name = "Laptop & Máy tính", Description = "Các dòng laptop văn phòng, đồ họa, gaming" };
         var catPhone = new Category { Name = "Điện thoại & Tablet", Description = "Smartphone cao cấp, máy tính bảng thông minh" };
         var catAccessory = new Category { Name = "Phụ kiện công nghệ", Description = "Chuột, bàn phím, tai nghe, sạc cáp" };
@@ -57,7 +105,7 @@ public static class DbInitializer
         context.Categories.AddRange(catLaptop, catPhone, catAccessory, catAudio);
         await context.SaveChangesAsync();
 
-        // 4. Seed Products
+        // 5. Seed Products
         var products = new List<Product>
         {
             new Product
@@ -191,32 +239,35 @@ public static class DbInitializer
         context.Products.AddRange(products);
         await context.SaveChangesAsync();
 
-        // 5. Seed sample Order
-        var sampleOrder = new Order
+        // 6. Seed sample Order
+        if (customer1 != null)
         {
-            CustomerId = customer1.Id,
-            OrderDate = DateTime.UtcNow.AddDays(-2),
-            ShippingAddress = customer1.Address,
-            Status = "Processing",
-            TotalAmount = products[4].Price + products[5].Price,
-            OrderDetails = new List<OrderDetail>
+            var sampleOrder = new Order
             {
-                new OrderDetail
+                CustomerId = customer1.Id,
+                OrderDate = DateTime.UtcNow.AddDays(-2),
+                ShippingAddress = customer1.Address,
+                Status = "Processing",
+                TotalAmount = products[4].Price + products[5].Price,
+                OrderDetails = new List<OrderDetail>
                 {
-                    ProductId = products[4].Id,
-                    Quantity = 1,
-                    UnitPrice = products[4].Price
-                },
-                new OrderDetail
-                {
-                    ProductId = products[5].Id,
-                    Quantity = 1,
-                    UnitPrice = products[5].Price
+                    new OrderDetail
+                    {
+                        ProductId = products[4].Id,
+                        Quantity = 1,
+                        UnitPrice = products[4].Price
+                    },
+                    new OrderDetail
+                    {
+                        ProductId = products[5].Id,
+                        Quantity = 1,
+                        UnitPrice = products[5].Price
+                    }
                 }
-            }
-        };
+            };
 
-        context.Orders.Add(sampleOrder);
-        await context.SaveChangesAsync();
+            context.Orders.Add(sampleOrder);
+            await context.SaveChangesAsync();
+        }
     }
 }

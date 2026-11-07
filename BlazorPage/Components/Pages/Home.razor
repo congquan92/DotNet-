@@ -5,58 +5,188 @@
 @inject AuthService Auth
 @inject NavigationManager Navigation
 
-<PageTitle>Trang chủ - Blazor E-Commerce</PageTitle>
+<PageTitle>Trang chủ - Siêu Thị Công Nghệ Blazor Shop</PageTitle>
 
-<!-- Hero Banner -->
-<section class="bg-primary text-white py-5 mb-5 shadow-sm rounded-bottom-4">
-    <div class="container text-center py-4">
-        <h1 class="display-4 fw-bold mb-3">Siêu Thị Công Nghệ Trực Tuyến</h1>
-        <p class="lead text-white-50 mb-4 mx-auto" style="max-width: 650px;">
-            Khám phá hàng loạt thiết bị công nghệ chính hãng, laptop, smartphone và phụ kiện cao cấp với mức giá ưu đãi nhất hôm nay.
-        </p>
-        <div class="d-flex justify-content-center gap-3">
-            <a href="products" class="btn btn-warning btn-lg fw-bold px-4 shadow">
-                🛒 Khám Phá Sản Phẩm Ngay
-            </a>
-            <a href="about" class="btn btn-outline-light btn-lg px-4">
-                ℹ️ Về Chúng Tôi
-            </a>
+<div class="container my-3">
+    <!-- ==========================================
+         1. HERO PROMOTION BANNER (CellphoneS Red)
+         ========================================== -->
+    <div class="row g-3 mb-4">
+        <!-- Main Carousel -->
+        <div class="col-12 col-lg-8">
+            <div id="homeHeroCarousel" class="carousel slide shadow-sm rounded-4 overflow-hidden h-100" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="0" class="active"></button>
+                    <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="1"></button>
+                    <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="2"></button>
+                </div>
+                <div class="carousel-inner h-100">
+                    <div class="carousel-item active" style="min-height: 330px; background: linear-gradient(135deg, #1f2937, #111827);">
+                        <div class="d-flex flex-column justify-content-center h-100 p-4 p-md-5 text-white">
+                            <span class="badge bg-danger align-self-start mb-2 px-3 py-2 fw-bold">SIÊU PHẨM MỚI</span>
+                            <h2 class="display-6 fw-bold mb-2">MacBook Air M2 & iPhone 15 Pro</h2>
+                            <p class="text-white-50 mb-4" style="max-width: 450px;">Thiết kế đỉnh cao, hiệu năng bứt phá với chip Apple Silicon tiên tiến.</p>
+                            <div>
+                                <a href="products" class="btn btn-warning fw-bold px-4 py-2 shadow-sm">
+                                    <i class="bi bi-cart-fill me-1"></i> Mua Ngay Giá Tốt
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item" style="min-height: 330px; background: linear-gradient(135deg, #b50014, #d70018);">
+                        <div class="d-flex flex-column justify-content-center h-100 p-4 p-md-5 text-white">
+                            <span class="badge bg-warning text-dark align-self-start mb-2 px-3 py-2 fw-bold">TUẦN LỄ CÔNG NGHỆ</span>
+                            <h2 class="display-6 fw-bold mb-2">Samsung Galaxy S24 Ultra</h2>
+                            <p class="text-white-50 mb-4" style="max-width: 450px;">Quyền năng Galaxy AI đỉnh cao, giảm thêm đến 2.000.000đ khi thu cũ đổi mới.</p>
+                            <div>
+                                <a href="products?categoryId=2" class="btn btn-light fw-bold px-4 py-2 text-danger shadow-sm">
+                                    <i class="bi bi-stars me-1"></i> Khám Phá Galaxy
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item" style="min-height: 330px; background: linear-gradient(135deg, #0d6efd, #052c65);">
+                        <div class="d-flex flex-column justify-content-center h-100 p-4 p-md-5 text-white">
+                            <span class="badge bg-danger align-self-start mb-2 px-3 py-2 fw-bold">ÂM THANH ĐỈNH CAO</span>
+                            <h2 class="display-6 fw-bold mb-2">Sony & Marshall Giảm Đến 30%</h2>
+                            <p class="text-white-50 mb-4" style="max-width: 450px;">Đắm chìm trong không gian âm nhạc Hi-Res Audio với tai nghe chống ồn chuẩn phòng thu.</p>
+                            <div>
+                                <a href="products?categoryId=4" class="btn btn-warning fw-bold px-4 py-2 shadow-sm">
+                                    <i class="bi bi-headphones me-1"></i> Xem Ưu Đãi
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Side Promo Cards -->
+        <div class="col-12 col-lg-4 d-flex flex-column gap-3">
+            <div class="bg-white rounded-4 p-3 shadow-sm border border-light flex-grow-1 d-flex flex-column justify-content-center">
+                <span class="badge bg-danger-subtle text-danger fw-bold small mb-1 align-self-start">ƯU ĐÃI ĐỘC QUYỀN</span>
+                <h6 class="fw-bold m-0 text-dark">Thu Cũ Đổi Mới Lên Đời</h6>
+                <p class="text-muted small m-0 mb-2">Trợ giá lên đến 2 triệu đồng khi nâng cấp Smartphone mới.</p>
+                <a href="products" class="text-danger fw-semibold small text-decoration-none">Tìm hiểu ngay &rarr;</a>
+            </div>
+            <div class="bg-white rounded-4 p-3 shadow-sm border border-light flex-grow-1 d-flex flex-column justify-content-center">
+                <span class="badge bg-warning-subtle text-warning-emphasis fw-bold small mb-1 align-self-start">THÀNH VIÊN SMEMBER</span>
+                <h6 class="fw-bold m-0 text-dark">Ưu Đãi Đặc Quyền Giảm Thêm 5%</h6>
+                <p class="text-muted small m-0 mb-2">Tích điểm đổi quà cho khách hàng thân thiết tại Blazor Shop.</p>
+                <a href="profile" class="text-danger fw-semibold small text-decoration-none">Xem quyền lợi &rarr;</a>
+            </div>
         </div>
     </div>
-</section>
 
-<div class="container mb-5">
+    <!-- Notifications -->
     @if (!string.IsNullOrEmpty(successMessage))
     {
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            ✅ @successMessage
+        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 d-flex align-items-center mb-4" role="alert">
+            <i class="bi bi-check-circle-fill fs-5 me-2 text-success"></i>
+            <div>@successMessage</div>
             <button type="button" class="btn-close" @onclick="() => successMessage = null"></button>
         </div>
     }
 
-    <!-- Danh mục nổi bật -->
-    <div class="mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold m-0">📂 Danh Mục Nổi Bật</h3>
-            <a href="products" class="text-primary text-decoration-none fw-semibold">Xem tất cả &rarr;</a>
-        </div>
-
-        @if (categories == null)
-        {
-            <div class="text-center py-4 text-muted">Đang tải danh mục...</div>
-        }
-        else
-        {
-            <div class="row g-3">
+    <!-- ==========================================
+         2. CATEGORY QUICK ICONS
+         ========================================== -->
+    <div class="mb-4">
+        <div class="row row-cols-2 row-cols-sm-4 g-2 g-md-3">
+            @if (categories != null)
+            {
                 @foreach (var cat in categories)
                 {
-                    <div class="col-6 col-md-3">
-                        <div class="card h-100 border-0 shadow-sm text-center p-3 hover-shadow"
-                             style="cursor: pointer; transition: transform 0.2s;"
-                             @onclick="() => GoToCategory(cat.Id)">
-                            <div class="fs-1 mb-2">💻</div>
-                            <h6 class="fw-bold mb-1">@cat.Name</h6>
-                            <p class="text-muted small m-0">@cat.Description</p>
+                    string icon = cat.Id switch
+                    {
+                        1 => "bi-laptop",
+                        2 => "bi-phone",
+                        3 => "bi-keyboard",
+                        4 => "bi-headphones",
+                        _ => "bi-device-ssd"
+                    };
+
+                    <div class="col">
+                        <a href="products?categoryId=@cat.Id" class="cat-quick-card">
+                            <div class="cat-icon-circle">
+                                <i class="bi @icon"></i>
+                            </div>
+                            <p class="cat-quick-title">@cat.Name</p>
+                            <span class="small text-muted">@cat.Description</span>
+                        </a>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- ==========================================
+         3. FLASH SALE SECTION
+         ========================================== -->
+    <div class="flash-sale-box">
+        <div class="flash-sale-header">
+            <div class="flash-sale-title">
+                <i class="bi bi-lightning-charge-fill text-warning fs-3"></i>
+                <span>GIỜ VÀNG GIÁ SỐC</span>
+            </div>
+            <div class="countdown-box">
+                <span class="text-white-50 small me-1">Kết thúc sau:</span>
+                <span class="badge-timer">02</span> :
+                <span class="badge-timer">45</span> :
+                <span class="badge-timer">18</span>
+            </div>
+        </div>
+
+        @if (featuredProducts != null)
+        {
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+                @foreach (var prod in featuredProducts.Take(4))
+                {
+                    <div class="col">
+                        <div class="product-card shadow-sm">
+                            <span class="badge-discount">-15%</span>
+                            <span class="badge-installment">Trả góp 0%</span>
+
+                            <a href="products/@prod.Id" class="product-image-box">
+                                <img src="@prod.ImageUrl" alt="@prod.Name" loading="lazy" />
+                            </a>
+
+                            <div class="product-info">
+                                <a href="products/@prod.Id" class="product-title" title="@prod.Name">
+                                    @prod.Name
+                                </a>
+
+                                <div class="product-price-box">
+                                    <span class="product-price">@prod.Price.ToString("N0") ₫</span>
+                                    <span class="product-original-price">@((prod.Price * 1.15m).ToString("N0")) ₫</span>
+                                </div>
+
+                                <div class="product-rating">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-half"></i>
+                                    <span class="review-count">(4.9/5)</span>
+                                </div>
+
+                                <div class="product-promo-box">
+                                    <i class="bi bi-gift-fill me-1"></i> Giảm thêm 500k qua Smember & VNPAY
+                                </div>
+
+                                <div class="d-flex gap-2 mt-3">
+                                    <button class="btn btn-cps-red w-100 py-2 small fw-semibold"
+                                            @onclick="() => HandleAddToCart(prod)">
+                                        <i class="bi bi-cart-plus me-1"></i> Mua ngay
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 }
@@ -64,69 +194,63 @@
         }
     </div>
 
-    <!-- Sản phẩm nổi bật -->
-    <div>
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold m-0">🔥 Sản Phẩm Bán Chạy</h3>
-            <a href="products" class="text-primary text-decoration-none fw-semibold">Xem kho sản phẩm &rarr;</a>
+    <!-- ==========================================
+         4. ALL PRODUCTS
+         ========================================== -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+            <h4 class="fw-bold m-0 d-flex align-items-center gap-2">
+                <i class="bi bi-grid-fill text-danger"></i>
+                <span>Tất Cả Sản Phẩm Chính Hãng</span>
+            </h4>
+            <a href="products" class="text-danger fw-semibold text-decoration-none small">Xem thêm kho sản phẩm &rarr;</a>
         </div>
 
-        @if (featuredProducts == null)
+        @if (featuredProducts != null)
         {
-            <div class="text-center py-5 text-muted">Đang tải sản phẩm từ PostgreSQL...</div>
-        }
-        else if (featuredProducts.Count == 0)
-        {
-            <div class="alert alert-warning text-center">Chưa có sản phẩm nào trong cơ sở dữ liệu.</div>
-        }
-        else
-        {
-            <div class="row g-4">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
                 @foreach (var prod in featuredProducts)
                 {
-                    <div class="col-12 col-sm-6 col-lg-3">
-                        <div class="card h-100 border-0 shadow-sm overflow-hidden d-flex flex-column hover-shadow">
-                            <a href="products/@prod.Id" class="text-decoration-none">
-                                <div class="bg-light d-flex align-items-center justify-content-center p-2" style="height: 200px;">
-                                    <img src="@prod.ImageUrl" class="object-fit-contain w-100 h-100"
-                                         alt="@prod.Name"
-                                         onerror="this.src='https://placehold.co/400x300?text=No+Image'" />
-                                </div>
+                    <div class="col">
+                        <div class="product-card shadow-sm">
+                            <span class="badge-discount">-10%</span>
+                            <span class="badge-installment">Trả góp 0%</span>
+
+                            <a href="products/@prod.Id" class="product-image-box">
+                                <img src="@prod.ImageUrl" alt="@prod.Name" loading="lazy" />
                             </a>
-                            <div class="card-body d-flex flex-column p-3">
-                                <span class="badge bg-secondary-subtle text-secondary small align-self-start mb-2">
-                                    @(prod.Category?.Name ?? "Chung")
-                                </span>
-                                <a href="products/@prod.Id" class="text-decoration-none text-dark">
-                                    <h6 class="card-title fw-bold text-truncate" title="@prod.Name">@prod.Name</h6>
+
+                            <div class="product-info">
+                                <a href="products/@prod.Id" class="product-title" title="@prod.Name">
+                                    @prod.Name
                                 </a>
-                                <p class="card-text text-muted small flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                    @prod.Description
-                                </p>
-                                <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                    <span class="fs-5 fw-bold text-danger">@prod.Price.ToString("N0") đ</span>
-                                    <div class="d-flex align-items-center gap-1">
-                                        @if (Auth.IsLoggedIn)
-                                        {
-                                            <button class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1"
-                                                    @onclick="() => HandleAddToCart(prod)" title="Thêm vào giỏ">
-                                                + Giỏ hàng
-                                            </button>
-                                            <button class="btn btn-sm btn-danger rounded-pill px-2 py-1 fw-semibold shadow-sm"
-                                                    @onclick="() => HandleBuyNow(prod)" title="Mua ngay">
-                                                ⚡ Mua ngay
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <a href="products/@prod.Id" class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-1">
-                                                👁️ Chi tiết
-                                            </a>
-                                            <a href="login" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1 fw-semibold">
-                                                ⚡ Mua ngay
-                                            </a>
-                                        }
-                                    </div>
+
+                                <div class="product-price-box">
+                                    <span class="product-price">@prod.Price.ToString("N0") ₫</span>
+                                    <span class="product-original-price">@((prod.Price * 1.10m).ToString("N0")) ₫</span>
+                                </div>
+
+                                <div class="product-rating">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-half"></i>
+                                    <span class="review-count">(128 đánh giá)</span>
+                                </div>
+
+                                <div class="product-promo-box">
+                                    <i class="bi bi-shield-check me-1"></i> Bảo hành chính hãng 12 tháng tại TTBH ủy quyền
+                                </div>
+
+                                <div class="d-flex gap-2 mt-3">
+                                    <button class="btn btn-cps-red flex-grow-1 py-2 small fw-semibold"
+                                            @onclick="() => HandleAddToCart(prod)">
+                                        <i class="bi bi-cart-plus me-1"></i> Thêm giỏ
+                                    </button>
+                                    <a href="products/@prod.Id" class="btn btn-outline-secondary py-2 px-3 small" title="Chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -152,30 +276,9 @@
             .ToListAsync();
     }
 
-    private void GoToCategory(int catId)
-    {
-        Navigation.NavigateTo($"products?category={catId}");
-    }
-
     private void HandleAddToCart(Product product)
     {
-        if (!Auth.IsLoggedIn)
-        {
-            Navigation.NavigateTo("login");
-            return;
-        }
         Cart.AddToCart(product, 1);
         successMessage = $"Đã thêm \"{product.Name}\" vào giỏ hàng thành công!";
-    }
-
-    private void HandleBuyNow(Product product)
-    {
-        if (!Auth.IsLoggedIn)
-        {
-            Navigation.NavigateTo("login");
-            return;
-        }
-        Cart.AddToCart(product, 1);
-        Navigation.NavigateTo("cart");
     }
 }

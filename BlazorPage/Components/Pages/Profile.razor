@@ -293,7 +293,7 @@
         try
         {
             await using var context = await DbFactory.CreateDbContextAsync();
-            var accountId = Auth.CurrentUser?.Id;
+            var userId = Auth.CurrentUser?.Id;
             var customerId = Auth.CurrentUser?.CustomerId;
             var phone = Auth.CurrentUser?.Phone;
 
@@ -304,10 +304,10 @@
                 .Include(o => o.Customer)
                 .AsQueryable();
 
-            if (accountId.HasValue || customerId.HasValue)
+            if (!string.IsNullOrEmpty(userId) || customerId.HasValue)
             {
                 query = query.Where(o => 
-                    (o.Customer != null && o.Customer.AccountId == accountId) ||
+                    (o.Customer != null && o.Customer.UserId == userId) ||
                     (customerId.HasValue && o.CustomerId == customerId.Value) ||
                     (!string.IsNullOrEmpty(phone) && o.Customer != null && o.Customer.Phone == phone));
             }
@@ -333,14 +333,14 @@
         try
         {
             await using var context = await DbFactory.CreateDbContextAsync();
-            var accountId = Auth.CurrentUser.Id;
+            var userId = Auth.CurrentUser.Id;
 
-            var customer = await context.Customers.FirstOrDefaultAsync(c => c.AccountId == accountId);
+            var customer = await context.Customers.FirstOrDefaultAsync(c => c.UserId == userId);
             if (customer == null)
             {
                 customer = new Customer
                 {
-                    AccountId = accountId,
+                    UserId = userId,
                     FullName = editFullName.Trim(),
                     Phone = editPhone.Trim(),
                     Email = editEmail.Trim(),

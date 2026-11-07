@@ -1,49 +1,48 @@
-<div class="top-row ps-3 navbar navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand text-warning fw-bold" href="/admin/dashboard">
-            <span class="bi bi-shield-lock-fill"></span> ADMIN PORTAL
-        </a>
-    </div>
+<div class="admin-brand-box p-3 border-bottom border-secondary border-opacity-25">
+    <a class="admin-brand text-warning fw-bold text-decoration-none d-flex align-items-center gap-2 fs-5 m-0 p-0" href="admin/dashboard">
+        <i class="bi bi-shield-lock-fill fs-4 text-warning"></i>
+        <span>ADMIN PORTAL</span>
+    </a>
 </div>
 
-<div class="nav-scrollable bg-dark">
-    <nav class="nav flex-column p-2">
-        <div class="nav-item mb-2">
-            <NavLink class="nav-link text-white rounded px-3 py-2" href="/admin/dashboard" Match="NavLinkMatch.All">
-                📊 Trang chủ admin
-            </NavLink>
-        </div>
+<div class="py-3 d-flex flex-column">
+    <div class="px-3 pb-2 text-uppercase text-secondary small fw-semibold" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+        Quản trị hệ thống
+    </div>
 
-        <div class="nav-item mb-2">
-            <NavLink class="nav-link text-white rounded px-3 py-2" href="/admin/orders">
-                📦 Quản lý đơn hàng
-            </NavLink>
-        </div>
+    <NavLink class="admin-nav-link" href="admin/dashboard" Match="NavLinkMatch.All">
+        <i class="bi bi-speedometer2"></i>
+        <span>Bảng điều khiển</span>
+    </NavLink>
 
-        <div class="nav-item mb-2">
-            <NavLink class="nav-link text-white rounded px-3 py-2" href="/admin/products">
-                🏷️ Quản lý sản phẩm
-            </NavLink>
-        </div>
+    <NavLink class="admin-nav-link" href="admin/products">
+        <i class="bi bi-box-seam"></i>
+        <span>Quản lý sản phẩm</span>
+    </NavLink>
 
-        <div class="nav-item mb-2">
-            <NavLink class="nav-link text-white rounded px-3 py-2" href="/admin/customers">
-                👥 Quản lý khách hàng
-            </NavLink>
-        </div>
+    <NavLink class="admin-nav-link" href="admin/orders">
+        <i class="bi bi-receipt"></i>
+        <span>Quản lý đơn hàng</span>
+    </NavLink>
 
-        <div class="nav-item mb-2">
-            <NavLink class="nav-link text-white rounded px-3 py-2" href="/admin/accounts">
-                🔐 Quản lý tài khoản
-            </NavLink>
-        </div>
+    <NavLink class="admin-nav-link" href="admin/customers">
+        <i class="bi bi-people"></i>
+        <span>Quản lý khách hàng</span>
+    </NavLink>
 
-        <hr class="text-secondary my-3" />
+    <NavLink class="admin-nav-link" href="admin/accounts">
+        <i class="bi bi-person-badge"></i>
+        <span>Quản lý tài khoản</span>
+    </NavLink>
 
-        <div class="nav-item">
-            <NavLink class="nav-link text-warning rounded px-3 py-2" href="/">
-                🏠 Về trang bán hàng
-            </NavLink>
-        </div>
-    </nav>
+    <hr class="border-secondary border-opacity-25 mx-3 my-3" />
+
+    <div class="px-3 pb-2 text-uppercase text-secondary small fw-semibold" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+        Cửa hàng
+    </div>
+
+    <a class="admin-nav-link text-warning" href="/">
+        <i class="bi bi-shop text-warning"></i>
+        <span>Về trang bán hàng</span>
+    </a>
 </div>

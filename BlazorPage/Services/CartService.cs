@@ -4,9 +4,36 @@ namespace BlazorPage.Services;
 
 public class CartItem
 {
-    public Product Product { get; set; } = null!;
+    private Product? _product;
+
+    public Product Product
+    {
+        get => _product ??= new Product 
+        { 
+            Id = ProductId, 
+            Name = ProductName, 
+            Price = Price, 
+            ImageUrl = ImageUrl 
+        };
+        set
+        {
+            _product = value;
+            if (value != null)
+            {
+                ProductId = value.Id;
+                ProductName = value.Name;
+                Price = value.Price;
+                ImageUrl = value.ImageUrl;
+            }
+        }
+    }
+
+    public int ProductId { get; set; }
+    public string ProductName { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
     public int Quantity { get; set; } = 1;
-    public decimal SubTotal => Product.Price * Quantity;
+    public decimal SubTotal => Price * Quantity;
 }
 
 public class CartService
@@ -23,21 +50,29 @@ public class CartService
 
     public void AddToCart(Product product, int quantity = 1)
     {
-        var existing = _items.FirstOrDefault(i => i.Product.Id == product.Id);
+        var existing = _items.FirstOrDefault(i => i.ProductId == product.Id);
         if (existing != null)
         {
             existing.Quantity += quantity;
         }
         else
         {
-            _items.Add(new CartItem { Product = product, Quantity = quantity });
+            _items.Add(new CartItem 
+            { 
+                Product = product,
+                ProductId = product.Id,
+                ProductName = product.Name,
+                Price = product.Price,
+                ImageUrl = product.ImageUrl,
+                Quantity = quantity 
+            });
         }
         NotifyStateChanged();
     }
 
     public void UpdateQuantity(int productId, int quantity)
     {
-        var existing = _items.FirstOrDefault(i => i.Product.Id == productId);
+        var existing = _items.FirstOrDefault(i => i.ProductId == productId);
         if (existing != null)
         {
             if (quantity <= 0)
@@ -54,7 +89,7 @@ public class CartService
 
     public void RemoveFromCart(int productId)
     {
-        var existing = _items.FirstOrDefault(i => i.Product.Id == productId);
+        var existing = _items.FirstOrDefault(i => i.ProductId == productId);
         if (existing != null)
         {
             _items.Remove(existing);
