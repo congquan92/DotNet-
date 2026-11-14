@@ -238,7 +238,7 @@
 
         try
         {
-            await using var context = await DbFactory.CreateDbContextAsync();
+            await using AppDbContext? context = await DbFactory.CreateDbContextAsync();
 
             Customer? customer = null;
             if (Auth.IsLoggedIn && Auth.CurrentUser != null)
